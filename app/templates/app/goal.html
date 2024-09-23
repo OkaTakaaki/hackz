@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>目標作成</title>
+</head>
+<body>
+    <h1>新しい目標を作成</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}  <!-- フォームの各フィールドをパラグラフとして表示 -->
+        <button type="submit">作成</button>
+    </form>
+</body>
+</html>

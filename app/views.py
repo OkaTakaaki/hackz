@@ -1,9 +1,11 @@
 from unittest import loader
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.template import loader
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth import login, logout
-from app.models import CustomUser
+from django.contrib.auth import login, logout, authenticate
+from app.models import CustomUser, Goal
+from django.contrib.auth.decorators import login_required
+from .forms import GoalForm
 
 def index(request):
     context = {'user': request.user}
@@ -35,7 +37,8 @@ def signin(request):
         except CustomUser.DoesNotExist:
             return render(request, 'signin.html', {'error_message': 'ユーザーが存在しません。'})
 
-        if user.password == password:
+        user = authenticate(request, username=user.username, password=password)
+        if user is not None:
             login(request, user)
             return HttpResponseRedirect('/home')
         else:
@@ -50,3 +53,17 @@ def signout(request):
 def home(request):
     template = loader.get_template("app/home.html")
     return HttpResponse(template.render({}, request))
+
+@login_required  # ログインが必要
+def goal(request):
+    if request.method == 'POST':
+        form = GoalForm(request.POST)
+        if form.is_valid():
+            goal = form.save(commit=False)  # フォームからオブジェクトを作成するが、まだ保存しない
+            goal.user = request.user  # 現在ログインしているユーザーをセット
+            goal.save()  # データベースに保存
+            return HttpResponseRedirect('/home')
+    else:
+        form = GoalForm()  # 空のフォームを表示
+
+    return render(request, 'app/goal.html', {'form': form})
