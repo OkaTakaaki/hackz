@@ -1,0 +1,39 @@
+<!-- admin_dashboard.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>管理者ダッシュボード</title>
+
+    <style>
+        img {
+            width: 200px;  
+            height: 200px;  
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>管理者ダッシュボード</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }} <!-- レア度の選択肢も含まれる -->
+        <button type="submit">名言を追加</button>
+    </form>
+
+    <h2>追加された名言</h2>
+    <ul>
+        {% for aphorism in aphorisms %}
+            <li>
+                {{ aphorism.word }} - {{ aphorism.author }} <br>
+                <small>レア度: {{ aphorism.get_rarity_display }}</small> <!-- レア度の表示 -->
+                <small>追加日時: {{ aphorism.created_date }}</small> <!-- 追加日時の表示 -->
+                <a href="{% url 'app:edit_aphorism' aphorism.pk %}">編集</a>
+                <a href="{% url 'app:delete_aphorism' aphorism.pk %}">削除</a>
+            </li>
+            <img src="{{ aphorism.picture.url }}" alt="{{ aphorism.word }}">
+        {% endfor %}
+    </ul>
+</body>
+</html>

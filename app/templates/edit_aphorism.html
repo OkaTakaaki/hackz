@@ -1,0 +1,18 @@
+<!-- edit_aphorism.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>名言を編集</title>
+</head>
+<body>
+    <h1>名言を編集</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">更新</button>
+    </form>
+    <a href="{% url 'app:admin_dashboard' %}">ダッシュボードに戻る</a>
+</body>
+</html>
