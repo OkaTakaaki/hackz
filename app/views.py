@@ -51,8 +51,11 @@ def signout(request):
     return HttpResponseRedirect('/')
 
 def home(request):
-    template = loader.get_template("app/home.html")
-    return HttpResponse(template.render({}, request))
+    goals = Goal.objects.all()
+    context = {'goals': goals}
+    return render(request, "app/home.html", context)
+    # template = loader.get_template("app/home.html")
+    # return HttpResponse(template.render({}, request))
 
 @login_required  # ログインが必要
 def goal(request):

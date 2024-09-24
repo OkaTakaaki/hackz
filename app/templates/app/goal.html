@@ -6,11 +6,52 @@
     <title>目標作成</title>
 </head>
 <body>
-    <h1>新しい目標を作成</h1>
+    <h1>記録</h1>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}  <!-- フォームの各フィールドをパラグラフとして表示 -->
-        <button type="submit">作成</button>
+    
+        <!-- モチベーションスライダー -->
+        <div>
+            <label for="id_motivation">モチベーション: <span id="motivation-value">{{ form.motivation.value }}</span></label>
+            {{ form.motivation }}
+        </div>
+    
+        <!-- 目標 -->
+        <div>
+            <label for="id_objective">目標:</label>
+            {{ form.objective }}
+        </div>
+    
+        <!-- 達成度スライダー -->
+        <div>
+            <label for="id_achievement" type="hidden"><span id="achievement-value">{{ form.achievement.value }}</span></label>
+            {{ form.achievement.as_hidden }}
+        </div>
+    
+        <!-- 振り返り -->
+        <div>
+            <label for="id_turned"></label>
+            {{ form.turned.as_hidden }}
+        </div>
+    
+        <button type="submit">保存</button>
     </form>
+    
+    <!-- スライダーの値をリアルタイムで表示するためのJavaScript -->
+    <script>
+        var motivationSlider = document.getElementById('id_motivation');
+        var motivationValue = document.getElementById('motivation-value');
+        motivationValue.innerHTML = motivationSlider.value;
+        motivationSlider.oninput = function() {
+            motivationValue.innerHTML = this.value;
+        }
+    
+        var achievementSlider = document.getElementById('id_achievement');
+        var achievementValue = document.getElementById('achievement-value');
+        achievementValue.innerHTML = achievementSlider.value;
+        achievementSlider.oninput = function() {
+            achievementValue.innerHTML = this.value;
+        }
+    </script>    
 </body>
 </html>
