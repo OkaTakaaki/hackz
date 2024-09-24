@@ -7,8 +7,9 @@ class AdminLoginForm(forms.Form):
 
 
 
+
 class AphorismForm(forms.ModelForm):
     class Meta:
         model = Aphorism
-        fields = ['word', 'author', 'picture', 'rarity']  
+        fields = ['word', 'author', 'picture', 'rarity']
 

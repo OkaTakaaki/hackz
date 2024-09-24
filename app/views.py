@@ -47,7 +47,6 @@ def admin_dashboard(request):
         form = AphorismForm()
 
     return render(request, 'admin_dashboard.html', {'form': form, 'aphorisms': aphorisms})
-
 from django.shortcuts import get_object_or_404
 
 @login_required
