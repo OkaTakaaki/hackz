@@ -1,0 +1,4 @@
+{% for year_month, graph in graphs.items %}
+    <h2>{{ year_month }}のグラフ</h2>
+    <img src="data:image/png;base64, {{ graph }}" alt="Graph for {{ year_month }}">
+{% endfor %}

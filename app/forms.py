@@ -49,14 +49,5 @@ class GoalForm(forms.ModelForm):
                     'step': '1',       # 1刻みで調整
                     'class': 'slider'  # スライダー用のクラス
                 }
-            ),
-            'achievement': forms.NumberInput(
-                attrs={
-                    'type': 'range',
-                    'min': '0',
-                    'max': '10',
-                    'step': '1',
-                    'class': 'slider'
-                }
             )
         }

@@ -128,3 +128,63 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
         """指定した月のスケジュールを取得する（ダミー関数）"""
         # 実際のスケジュールデータを取得する処理を実装
         return {}
+    
+from django.shortcuts import render
+import io
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import base64
+from django.contrib.auth.decorators import login_required
+from app.models import Goal
+import calendar
+
+def create_graph(x_list, y_list):
+    plt.cla()
+    plt.plot(y_list, x_list, label="達成度")
+    plt.ylim(0, 100)  # y軸の範囲を0から100に固定
+    plt.yticks(range(0, 101, 10))  # 0から100まで10刻みで目盛りを表示
+    plt.xlabel('日付')
+    plt.ylabel('達成度')
+    plt.xticks(rotation=45)  # 日付を回転して見やすくする
+
+def get_image():
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    image_png = buffer.getvalue()
+    graph = base64.b64encode(image_png)
+    graph = graph.decode('utf-8')
+    buffer.close()
+    return graph
+
+@login_required
+def plot(request):
+    # 現在ログインしているユーザーの目標を取得し、作成日順にソート
+    goals = Goal.objects.filter(user=request.user).order_by('created_at')
+    
+    # 月ごとにデータをグループ化するための辞書
+    monthly_goals = {}
+    
+    for goal in goals:
+        # 年と月ごとにグループ化
+        year_month = goal.created_at.strftime('%Y-%m')
+        if year_month not in monthly_goals:
+            monthly_goals[year_month] = []
+        monthly_goals[year_month].append(goal)
+
+    # 各月ごとのグラフを作成
+    graphs = {}
+    for year_month, goals_in_month in monthly_goals.items():
+        # 達成度と日付のリストを作成
+        x_list = [goal.achievement for goal in goals_in_month]
+        y_list = [goal.created_at.strftime('%m/%d') for goal in goals_in_month]  # 日付をフォーマット
+
+        # グラフを作成
+        create_graph(x_list, y_list)
+        graph = get_image()
+
+        # 年月ごとにグラフを保存
+        graphs[year_month] = graph
+
+    # テンプレートに月ごとのグラフを渡す
+    return render(request, 'app/plot.html', {'graphs': graphs})
