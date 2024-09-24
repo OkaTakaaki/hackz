@@ -27,14 +27,15 @@
 </head>
 <body>
     <h1>Collections List</h1>
+    <div style="color: red;">「コレクションリスト！！もっと熱くなれよ！！そのコレクション、君だけの宝物だろ！？ただのリストじゃない！そこに込めた情熱、努力、そして成長の証が詰まってるんだ！もっと声出していけ！！ひとつひとつのコレクションが君を強くするんだ！！燃えていけぇぇぇ！！」</div>
 
     <div class="collection-list">
         {% for collection in collections %}
         <div class="collection-item">
             <h2>{{ collection.word }}</h2>
-            <p>Author: {{ collection.author }}</p>
-            <p>Acquisition Date: {{ collection.acquision_date }}</p>
-            <p>rarity: {{ collection.rarity }}</p>
+            <p>松岡: {{ collection.author }}</p>
+            <p>取得日: {{ collection.acquision_date }}</p>
+            <p>レア度: {{ collection.get_rarity_display }}</p>
             <img src="{{ collection.picture.url }}" alt="Picture of {{ collection.word }}" width="300">
         </div>
         {% endfor %}

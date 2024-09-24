@@ -10,15 +10,14 @@ class Collection(models.Model):
     word = models.CharField(max_length=200)
     author = models.CharField(max_length=200)
     picture = models.ImageField(upload_to='images/')
-    acquision_date = models.DateTimeField("Acquisition date")
-    rarity = models.CharField(
+    acquision_date = models.DateTimeField("Acquisition dat")
+    rarity = models.IntegerField(
         max_length=20,
         choices=[
-            ('こもん', 'common'),
-            ('れあ', 'rare'),
-            ('げきれあ', 'very_rare'),
-            ('いいんじゃない', 'unusual'),
-            ('なかなかレア', 'not_very_rare'),
+            (1, '☆'),
+            (2, '☆☆'),
+            (3, '☆☆☆'),
+            (4, '☆☆☆☆'),
+            (5, '☆☆☆☆☆'),
         ],
-        default='common'
     )

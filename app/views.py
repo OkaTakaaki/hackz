@@ -10,6 +10,7 @@ from django.views.generic import CreateView
 from .forms import CollectionForm
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 def index(request):
@@ -59,7 +60,13 @@ def home(request):
     template = loader.get_template("app/home.html")
     return HttpResponse(template.render({}, request))
 
+
+
 class ViewCollectionList(ListView):
     model = Collection
     template_name = 'collection_list.html'  # テンプレート名
     context_object_name = 'collections'  # テンプレート内で使うオブジェクト名
+
+    def get_queryset(self):
+        # rarityで昇順にソートしてクエリを返す
+        return Collection.objects.filter(user=self.request.user).order_by('rarity')
