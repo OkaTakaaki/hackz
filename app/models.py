@@ -31,7 +31,7 @@ class Goal(models.Model):
     objective = models.CharField(verbose_name="目標", max_length=100)
     achievement = models.IntegerField(
         verbose_name="達成度", 
-        validators=[MinValueValidator(0), MaxValueValidator(10)],  # 0から10の範囲に制限
+        validators=[MinValueValidator(0), MaxValueValidator(100)],  # 0から100の範囲に制限
         blank=True,  # フォームで空欄を許可
         null=True    # データベースでnullを許可
     )

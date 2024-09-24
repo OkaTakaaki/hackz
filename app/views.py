@@ -77,12 +77,26 @@ def goal(request):
 
     return render(request, 'app/goal.html', {'form': form})
 
+def detail_day(request, year, month, day):
+    goal_all = Goal.objects.all()
+    selectday = str(year) + "-" + str(month) + "-" + str(day)
+    try:
+        filter_goal = Goal.objects.get(created_at__date=selectday)
+    except:
+        filter_goal = None
+
+    context = {'filter_goal': filter_goal}
+    print("-------------------------" , goal_all[0].created_at.day , "-------------------------")
+    print("filter-------------------------" , filter_goal , "-------------------------")
+    return render(request, "app/input_goal.html", context)
+
 class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic.CreateView):
     """月間カレンダー、週間カレンダー、スケジュール登録画面のある欲張りビュー"""
     template_name = 'app/mycalendar.html'
     model = Schedule
     date_field = 'date'
     form_class = BS4ScheduleForm
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -92,11 +106,14 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
         # year と month をコンテキストに追加
         context['year'] = self.kwargs.get('year', datetime.date.today().year)
         context['month'] = self.kwargs.get('month', datetime.date.today().month)
+        context['day'] = self.kwargs.get('day', datetime.date.today().day)
+        print("###############", context['day'], "###############")
+        detail_day(self.request, context['year'], context['month'], context['day'])
 
         context.update(week_calendar_context)
         context.update(month_calendar_context)
         return context
-
+    
 
     def form_valid(self, form):
         month = self.kwargs.get('month')
@@ -115,16 +132,24 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
         """月間カレンダーを取得するメソッド"""
         today = datetime.date.today()
         month_days = calendar.monthcalendar(today.year, today.month)
-
+        
         # 各日のスケジュールを取得する処理を追加することができます
-        month_schedule_data = self.get_schedules_for_month(today.year, today.month)
+        month_schedule_data = self.get_schedules_for_month(today.year, today.month, today.day)
 
         return {
             'month_days': month_days,
             'month_schedule_data': month_schedule_data,
         }
 
-    def get_schedules_for_month(self, year, month):
+    def get_schedules_for_month(self, year, month, day):
         """指定した月のスケジュールを取得する（ダミー関数）"""
         # 実際のスケジュールデータを取得する処理を実装
-        return {}
+        goal_all = Goal.objects.all()
+        today = datetime.date.today()
+        filter_goal = Goal.objects.get(created_at__date=today)
+        print("-------------------------" , day , "-------------------------")
+        print("-------------------------" , goal_all[0].created_at.day , "-------------------------")
+        print("filter-------------------------" , filter_goal , "-------------------------")
+        return{}
+    
+    

@@ -25,7 +25,7 @@
                         {% for day in week %}
                             <td class="text-center">
                                 {% if day != 0 %}
-                                    <h4><a href="{% url 'app:mycalendar_with_date' year=year month=month day=day %}">{{ day }}</a></h4>
+                                    <h4><a href="{% url 'app:input_goal' year=year month=month day=day %}">{{ day }}</a></h4>
                                 {% else %}
                                     &nbsp;  <!-- 空白セル -->
                                 {% endif %}
