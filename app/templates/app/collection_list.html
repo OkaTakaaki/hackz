@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collections</title>
+    <style>
+        /* Flexboxを使用して、コレクションを横に並べる */
+        .collection-list {
+            display: flex;
+            flex-wrap: wrap; /* 複数行にわたる場合に対応 */
+            gap: 20px; /* アイテム間のスペース */
+        }
+        .collection-item {
+            width: calc(11.11% - 5px); /* 幅を33.33%に設定（3つ並ぶように） */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* ボックスシャドウで見栄えを良くする */
+            padding: 10px; /* 内側の余白 */
+            border: 1px solid #ccc; /* 枠線 */
+            border-radius: 8px; /* 角を丸くする */
+        }
+        img {
+            max-width: 100%; /* 画像がコンテナを超えないように */
+            height: auto; /* 高さを自動調整 */
+            border-radius: 8px; /* 画像の角を丸くする */
+        }
+    </style>
+</head>
+<body>
+    <h1>Collections List</h1>
+
+    <div class="collection-list">
+        {% for collection in collections %}
+        <div class="collection-item">
+            <h2>{{ collection.word }}</h2>
+            <p>Author: {{ collection.author }}</p>
+            <p>Acquisition Date: {{ collection.acquision_date }}</p>
+            <p>rarity: {{ collection.rarity }}</p>
+            <img src="{{ collection.picture.url }}" alt="Picture of {{ collection.word }}" width="300">
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
