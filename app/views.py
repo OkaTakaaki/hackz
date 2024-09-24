@@ -82,13 +82,12 @@ def detail_day(request, year, month, day):
     selectday = str(year) + "-" + str(month) + "-" + str(day)
     try:
         filter_goal = Goal.objects.get(created_at__date=selectday)
+        context = {'filter_goal': filter_goal}
+        return render(request, "app/input_goal.html", context)
     except:
         filter_goal = None
-
-    context = {'filter_goal': filter_goal}
-    print("-------------------------" , goal_all[0].created_at.day , "-------------------------")
-    print("filter-------------------------" , filter_goal , "-------------------------")
-    return render(request, "app/input_goal.html", context)
+        context = {'filter_goal': filter_goal}
+        return render(request, "app/input_goal_error.html", {"message":"{}に目標が設定されていません。".format(str(year) + "/" + str(month) + "/" + str(day))})
 
 class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic.CreateView):
     """月間カレンダー、週間カレンダー、スケジュール登録画面のある欲張りビュー"""
@@ -107,7 +106,6 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
         context['year'] = self.kwargs.get('year', datetime.date.today().year)
         context['month'] = self.kwargs.get('month', datetime.date.today().month)
         context['day'] = self.kwargs.get('day', datetime.date.today().day)
-        print("###############", context['day'], "###############")
         detail_day(self.request, context['year'], context['month'], context['day'])
 
         context.update(week_calendar_context)
@@ -144,12 +142,6 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
     def get_schedules_for_month(self, year, month, day):
         """指定した月のスケジュールを取得する（ダミー関数）"""
         # 実際のスケジュールデータを取得する処理を実装
-        goal_all = Goal.objects.all()
-        today = datetime.date.today()
-        filter_goal = Goal.objects.get(created_at__date=today)
-        print("-------------------------" , day , "-------------------------")
-        print("-------------------------" , goal_all[0].created_at.day , "-------------------------")
-        print("filter-------------------------" , filter_goal , "-------------------------")
         return{}
     
     
