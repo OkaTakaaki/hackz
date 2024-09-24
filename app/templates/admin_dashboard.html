@@ -6,10 +6,29 @@
     <title>管理者ダッシュボード</title>
 
     <style>
+        .aphorism-list {
+            display: flex;
+            flex-wrap: wrap; /* 複数行に折り返す */
+            gap: 20px; /* 要素間の余白 */
+        }
+
+        .aphorism-item {
+            display: flex;
+            flex-direction: column; /* 縦方向にレイアウト */
+            align-items: center; /* コンテンツを中央揃え */
+            width: 200px; /* 固定幅を設定 */
+            border: 1px solid #ccc; /* ボーダーを追加 */
+            padding: 10px; /* パディングを追加 */
+        }
+
         img {
-            width: 200px;  
-            height: 200px;  
-            max-width: 100%;
+            width: 100px;  /* 画像の幅を指定 */
+            height: 100px; /* 画像の高さを指定 */
+            border-radius: 50%; /* 画像を丸くする */
+        }
+
+        small {
+            margin-bottom: 5px; /* 小さな余白を追加 */
         }
     </style>
 </head>
@@ -23,20 +42,19 @@
     </form>
 
     <h2>追加された名言</h2>
-    <ul>
+    <div class="aphorism-list">
         {% for aphorism in aphorisms %}
-            <li>
-                <small>名言: {{ aphorism.word }} </small> <br>
-                <small>作者: {{ aphorism.author }} </small> <br>
-                <small>レア度: {{ aphorism.get_rarity_display }}</small><br> <!-- レア度の表示に改行 -->
-                <small>追加日時: {{ aphorism.created_date }}</small><br> <!-- 追加日時の表示に改行 -->
+            <div class="aphorism-item">
+                <small>名言: {{ aphorism.word }}</small>
+                <small>作者: {{ aphorism.author }}</small>
+                <small>レア度: {{ aphorism.get_rarity_display }}</small>
+                <!-- 日時表示をフォーマットする -->
+                <small>追加日時: {{ aphorism.created_date|date:"Y/n/j-G:i" }}</small>
                 <a href="{% url 'app:edit_aphorism' aphorism.pk %}">編集</a>
                 <a href="{% url 'app:delete_aphorism' aphorism.pk %}">削除</a>
-            </li>
-            <br> <!-- リストの要素の間に余白を入れる -->
-            <img src="{{ aphorism.picture.url }}" alt="{{ aphorism.word }}">
-            <br> <!-- 画像の下に改行を追加 -->
+                <img src="{{ aphorism.picture.url }}" alt="{{ aphorism.word }}">
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 </body>
 </html>
