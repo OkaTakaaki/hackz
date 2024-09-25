@@ -10,8 +10,8 @@
         {% if user_collections_count == total_aphorisms %}
             コンプリート！おめでとう！
 
-        {% if user_collections_count == 0}
-            0/{{ total_aphorisms}}
+        {% elif user_collections_count == 0 %}
+            0/{{ total_aphorisms }}
 
         {% else %}
             {{ user_collections_count }}/{{ total_aphorisms }}
