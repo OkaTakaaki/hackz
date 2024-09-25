@@ -30,7 +30,7 @@ class Collection(models.Model):
     picture = models.ImageField(upload_to='images/')
     acquision_date = models.DateTimeField("Acquisition dat")
     rarity = models.IntegerField(
-        max_length=20,
+        
         choices=[
             (1, '☆'),
             (2, '☆☆'),
@@ -55,7 +55,7 @@ class Aphorism(models.Model):
     author = models.CharField(max_length=100, blank=True, null=True)
     picture = models.ImageField(upload_to='images/')  
     rarity = models.IntegerField(
-        max_length=20,
+        
         choices=[
             (1, '☆'),
             (2, '☆☆'),
