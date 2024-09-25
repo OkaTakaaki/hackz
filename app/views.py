@@ -18,6 +18,14 @@ from . import mixins
 from django.utils import timezone
 import calendar
 from .models import AdminUser, Aphorism, Collection, Schedule
+import io
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import base64
+from app.models import Goal
+import calendar
+
 
 def index(request):
     context = {'user': request.user}
@@ -52,7 +60,7 @@ def signin(request):
         user = authenticate(request, username=user.username, password=password)
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect('/home')
+            return HttpResponseRedirect('/mycalendar/2024/9/')
         else:
             return render(request, 'signin.html', {'error_message': 'パスワードが正しくありません。'})
     else:
@@ -134,19 +142,46 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
         if month and year and day:
             date_obj = date(year=int(year), month=int(month), day=int(day))  # 修正
         else:
-            date = datetime.date.today()
+            date_obj = date.today()
+
         schedule = form.save(commit=False)
-        schedule.date = date
+        schedule.date = date_obj  # 修正
         schedule.save()
-        return redirect('app:mycalendar', year=date.year, month=date.month, day=date.day)
+
+        return redirect('app:mycalendar', year=date_obj.year, month=date_obj.month)
 
     def get_month_calendar(self):
         """月間カレンダーを取得するメソッド"""
-        today = datetime.date.today()
-        month_days = calendar.monthcalendar(today.year, today.month)
+        year = self.kwargs.get('year', date.today().year)
+        month = self.kwargs.get('month', date.today().month)
 
-        # 各日のスケジュールを取得する処理を追加することができます
-        month_schedule_data = self.get_schedules_for_month(today.year, today.month)
+        # 月の最初の日と最後の日を取得
+        first_day = date(year, month, 1)
+        last_day = (first_day + timedelta(days=31)).replace(day=1) - timedelta(days=1)
+        
+        # 月の初めの日から最後の日までのすべての日を取得
+        month_days = []
+        week = []
+        
+        # カレンダーを埋めるための空のセルを追加
+        for _ in range(first_day.weekday()):
+            week.append(0)  # 空白のセル
+
+        for day in range(1, last_day.day + 1):
+            week.append(day)
+            if len(week) == 7:  # 1週間分のセルが埋まったら
+                month_days.append(week)
+                week = []  # 新しい週を開始
+
+        # 月が終了した後の空白セルを追加
+        while len(week) < 7:
+            week.append(0)  # 空白のセル
+
+        if week:  # もし残りの週があれば追加
+            month_days.append(week)
+
+        # スケジュールデータを取得
+        month_schedule_data = self.get_schedules_for_month(year, month)
 
         return {
             'month_days': month_days,
@@ -156,8 +191,135 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
     def get_schedules_for_month(self, year, month):
         """指定した月のスケジュールを取得する（ダミー関数）"""
         # 実際のスケジュールデータを取得する処理を実装
-        return {}
-    
+        return {date(year, month, day): [] for day in range(1, calendar.monthrange(year, month)[1] + 1)}
+
+class MyCalendar(View):
+    def get(self, request, year, month):
+        # 月の日数を取得
+        num_days = monthrange(year, month)[1]
+        
+        # カレンダーの構造を作成
+        month_days = []
+        week = []
+        for day in range(1, num_days + 1):
+            week.append(day)
+            if len(week) == 7:  # 1週間分の配列が揃ったら
+                month_days.append(week)
+                week = []
+        if week:  # 残りの曜日を追加
+            month_days.append(week)
+
+        # 前月と次月の情報
+        previous_month = month - 1 if month > 1 else 12
+        previous_year = year if month > 1 else year - 1
+        next_month = month + 1 if month < 12 else 1
+        next_year = year if month < 12 else year + 1
+
+        context = {
+            'year': year,
+            'month': month,
+            'month_days': month_days,
+            'previous_year': previous_year,
+            'previous_month': previous_month,
+            'next_year': next_year,
+            'next_month': next_month,
+        }
+        return render(request, 'app/mycalendar.html', context)
+
+
+class MyCalendarWithDate(View):
+    def get(self, request, year, month, day):
+        goal = Goal.objects.filter(user=request.user, created_at__year=year, created_at__month=month, created_at__day=day).first()
+        goal_form = GoalForm(instance=goal) if goal else GoalForm()
+
+        context = {
+            'year': year,
+            'month': month,
+            'day': day,
+            'goal': goal,
+            'goal_form': goal_form,
+        }
+        return render(request, 'app/mycalendar_with_date.html', context)
+
+    def post(self, request, year, month, day):
+        goal = Goal.objects.filter(user=request.user, created_at__year=year, created_at__month=month, created_at__day=day).first()
+
+        # 新規目標のフォームを作成
+        if goal:
+            form = GoalForm(request.POST, instance=goal)  # 既存の目標を更新
+        else:
+            form = GoalForm(request.POST)  # 新しい目標のフォームを作成
+
+        if form.is_valid():
+            # 既存の目標を更新または新しい目標を作成
+            goal = form.save(commit=False)
+            goal.user = request.user
+            if not goal.created_at:
+                goal.created_at = timezone.now()  # 新しい場合は日時を設定
+            goal.save()
+            return redirect('app:mycalendar', year=year, month=month)
+
+        # バリデーションエラーがある場合、再度フォームを表示
+        context = {
+            'year': year,
+            'month': month,
+            'day': day,
+            'goal': goal,
+            'goal_form': form,
+        }
+        return render(request, 'app/mycalendar_with_date.html', context)
+
+def create_graph(x_list, y_list):
+    plt.cla()
+    plt.plot(y_list, x_list, label="モチベーション")
+    plt.ylim(0, 10)  # y軸の範囲を0から100に固定
+    plt.yticks(range(0, 11, 1))  # 0から10まで1刻みで目盛りを表示
+    plt.xlabel('日付')
+    plt.ylabel('モチベーション')
+    plt.xticks(rotation=45)  # 日付を回転して見やすくする
+
+def get_image():
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    image_png = buffer.getvalue()
+    graph = base64.b64encode(image_png)
+    graph = graph.decode('utf-8')
+    buffer.close()
+    return graph
+
+@login_required
+def plot(request, year, month):
+    # 現在ログインしているユーザーの目標を取得し、作成日順にソート
+    goals = Goal.objects.filter(user=request.user, created_at__year=year, created_at__month=month).order_by('created_at')
+
+    # 達成度と日付のリストを作成
+    x_list = [goal.motivation for goal in goals]
+    y_list = [goal.created_at.strftime('%m/%d') for goal in goals]  # 日付をフォーマット
+
+    # グラフを作成
+    create_graph(x_list, y_list)
+    graph = get_image()
+
+    # 現在の月
+    current_date = datetime(year, month, 1)
+
+    # 先月と次月の計算
+    previous_month = current_date - timedelta(days=1)
+    next_month = current_date + timedelta(days=calendar.monthrange(year, month)[1])
+
+    # テンプレートに渡すコンテキスト
+    context = {
+        'graph': graph,
+        'year': year,
+        'month': month,
+        'previous_year': previous_month.year,
+        'previous_month': previous_month.month,
+        'next_year': next_month.year,
+        'next_month': next_month.month,
+    }
+
+    return render(request, 'app/plot.html', context)
+
 class ViewCollectionList(ListView):
     model = Collection
     template_name = 'collection_list.html'  # テンプレート名

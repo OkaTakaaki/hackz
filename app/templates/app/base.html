@@ -50,19 +50,19 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/">Home</a>
+                        <a class="nav-link active" href="{% url 'app:mycalendar' year='2024' month='9' %}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/collections">コレクション一覧</a>
+                        <a class="nav-link" href="{% url 'app:collection-list' %}">コレクション一覧</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/graph">グラフ</a>
+                        <a class="nav-link" href="{% url 'app:plot' year='2024' month='9' %}">グラフ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/profile">プロフィール</a>
+                        <a class="nav-link" href="/">プロフィール</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/signout">ログアウト</a>
+                        <a class="nav-link" href="{% url 'app:signout' %}">ログアウト</a>
                     </li>
                 </ul>
             </div>
