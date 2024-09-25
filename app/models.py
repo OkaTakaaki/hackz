@@ -28,9 +28,8 @@ class Collection(models.Model):
     word = models.CharField(max_length=200)
     author = models.CharField(max_length=200)
     picture = models.ImageField(upload_to='images/')
-    acquision_date = models.DateTimeField("Acquisition dat")
+    acquisition_date = models.DateTimeField(default=timezone.now)
     rarity = models.IntegerField(
-        
         choices=[
             (1, '☆'),
             (2, '☆☆'),
@@ -115,7 +114,7 @@ class Goal(models.Model):
     number = models.IntegerField(verbose_name="件数", blank=True, null=True)
     turned = models.CharField(verbose_name="振り返り", max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(verbose_name="作成日")
-
+    flag = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.objective} ({self.achievement}%)"

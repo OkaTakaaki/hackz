@@ -89,4 +89,24 @@
         </div>
     </div>
 </div>
+<!-- スライダーの値をリアルタイムで表示するためのJavaScript -->
+<script>
+    var motivationSlider = document.getElementById('id_motivation');
+    if (motivationSlider) {
+        var motivationValue = document.getElementById('motivation-value');
+        motivationValue.innerHTML = motivationSlider.value || 50;  // 初期値を50に設定する
+        motivationSlider.oninput = function() {
+            motivationValue.innerHTML = this.value;
+        }
+    }
+
+    var achievementSlider = document.getElementById('id_achievement');
+    if (achievementSlider) {
+        var achievementValue = document.getElementById('achievement-value');
+        achievementValue.innerHTML = achievementSlider.value || 50;  // 初期値を50に設定する
+        achievementSlider.oninput = function() {
+            achievementValue.innerHTML = this.value;
+        }
+    }
+</script>
 {% endblock %}
