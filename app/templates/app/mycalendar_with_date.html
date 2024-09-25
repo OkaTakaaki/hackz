@@ -8,9 +8,12 @@
     {% if goal %}
         <h4>登録されている目標: {{ goal.objective }}</h4>
         <h5>モチベーション: {{ goal.motivation }}</h5>
-        
         <form method="post">
             {% csrf_token %}
+            <!-- hidden フィールドの設定 -->
+            {{ goal_form.objective.as_hidden }}
+            {{ goal_form.motivation.as_hidden }}
+            
             <div class="form-group">
                 {{ goal_form.achievement.label_tag }}
                 {{ goal_form.achievement }}
