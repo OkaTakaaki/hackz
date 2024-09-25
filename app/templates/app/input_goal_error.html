@@ -2,7 +2,8 @@
     window.onload = function() {
         alert("{{ message }}");
         setTimeout(function() {
-            window.location.href = '/mycalendar';
+            // 現在の年と月を使ってリダイレクト
+            window.location.href = "{% url 'app:mycalendar' year=current_year month=current_month %}";
         }, 500);  // 0.5秒後にリダイレクト
     };
 </script>
