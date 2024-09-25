@@ -1,4 +1,6 @@
-{% for year_month, graph in graphs.items %}
-    <h2>{{ year_month }}のグラフ</h2>
-    <img src="data:image/png;base64, {{ graph }}" alt="Graph for {{ year_month }}">
-{% endfor %}
+<div>
+    <h1>{{ year }}年{{ month }}月のグラフ</h1>
+    <img src="data:image/png;base64,{{ graph }}" alt="グラフ">
+</div>
+<a href="/plot/{{previous_year}}/{{previous_month}}">先月へ</a>
+<a href="/plot/{{next_year}}/{{next_month}}">翌月へ</a>

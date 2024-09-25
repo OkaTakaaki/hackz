@@ -132,6 +132,7 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
 from django.shortcuts import render
 import io
 import matplotlib
+from datetime import datetime, timedelta
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import base64
@@ -158,33 +159,34 @@ def get_image():
     return graph
 
 @login_required
-def plot(request):
+def plot(request, year, month):
     # 現在ログインしているユーザーの目標を取得し、作成日順にソート
-    goals = Goal.objects.filter(user=request.user).order_by('created_at')
-    
-    # 月ごとにデータをグループ化するための辞書
-    monthly_goals = {}
-    
-    for goal in goals:
-        # 年と月ごとにグループ化
-        year_month = goal.created_at.strftime('%Y-%m')
-        if year_month not in monthly_goals:
-            monthly_goals[year_month] = []
-        monthly_goals[year_month].append(goal)
+    goals = Goal.objects.filter(user=request.user, created_at__year=year, created_at__month=month).order_by('created_at')
 
-    # 各月ごとのグラフを作成
-    graphs = {}
-    for year_month, goals_in_month in monthly_goals.items():
-        # 達成度と日付のリストを作成
-        x_list = [goal.achievement for goal in goals_in_month]
-        y_list = [goal.created_at.strftime('%m/%d') for goal in goals_in_month]  # 日付をフォーマット
+    # 達成度と日付のリストを作成
+    x_list = [goal.achievement for goal in goals]
+    y_list = [goal.created_at.strftime('%m/%d') for goal in goals]  # 日付をフォーマット
 
-        # グラフを作成
-        create_graph(x_list, y_list)
-        graph = get_image()
+    # グラフを作成
+    create_graph(x_list, y_list)
+    graph = get_image()
 
-        # 年月ごとにグラフを保存
-        graphs[year_month] = graph
+    # 現在の月
+    current_date = datetime(year, month, 1)
 
-    # テンプレートに月ごとのグラフを渡す
-    return render(request, 'app/plot.html', {'graphs': graphs})
+    # 先月と次月の計算
+    previous_month = current_date - timedelta(days=1)
+    next_month = current_date + timedelta(days=calendar.monthrange(year, month)[1])
+
+    # テンプレートに渡すコンテキスト
+    context = {
+        'graph': graph,
+        'year': year,
+        'month': month,
+        'previous_year': previous_month.year,
+        'previous_month': previous_month.month,
+        'next_year': next_month.year,
+        'next_month': next_month.month,
+    }
+
+    return render(request, 'app/plot.html', context)
