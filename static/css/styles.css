@@ -1,4 +1,36 @@
-/* 既存のスタイル */
+
+
+/* コレクション状況セクションのスタイル */
+.centered-header {
+    background-color: #f5f5f5;  /* ソフトな背景色 */
+    padding: 20px;  /* 内側の余白 */
+    border-radius: 10px;  /* 角を丸くする */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* ほんのり影をつける */
+    text-align: center;  /* テキストを中央揃え */
+    margin-bottom: 20px;  /* 下に余白をつける */
+    font-family: 'Arial', sans-serif;  /* シンプルなフォントを使用 */
+}
+
+.collection-status {
+    
+    text-align: center;  /* テキストを中央揃え */
+   
+}
+
+.collection-status h2 {
+    font-size: 24px;  /* 見出しのサイズを大きく */
+    color: #333;  /* テキストの色 */
+    margin-bottom: 10px;  /* 見出しの下に少し余白 */
+}
+
+.collection-status p {
+    font-size: 36px;  /* コレクション数のフォントを大きく強調 */
+    font-weight: bold;  /* 太字にする */
+    color: #ff5722;  /* 目立つ色にする */
+}
+
+
+
 .collection-list {
     display: flex;
     flex-wrap: wrap;
