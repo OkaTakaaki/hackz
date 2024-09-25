@@ -1,4 +1,3 @@
-<!-- admin_dashboard.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -6,34 +5,78 @@
     <title>管理者ダッシュボード</title>
 
     <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logout {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .logout a {
+            color: #fff;
+            background-color: #007bff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .logout a:hover {
+            background-color: #0056b3;
+        }
+        form {
+            margin-bottom: 30px;
+        }
         .aphorism-list {
             display: flex;
-            flex-wrap: wrap; /* 複数行に折り返す */
-            gap: 20px; /* 要素間の余白 */
+            flex-wrap: wrap;
+            gap: 20px;
         }
-
         .aphorism-item {
             display: flex;
-            flex-direction: column; /* 縦方向にレイアウト */
-            align-items: center; /* コンテンツを中央揃え */
-            width: 200px; /* 固定幅を設定 */
-            border: 1px solid #ccc; /* ボーダーを追加 */
-            padding: 10px; /* パディングを追加 */
+            flex-direction: column;
+            align-items: center;
+            width: 200px;
+            border: 1px solid #ccc;
+            padding: 10px;
         }
-
         img {
-            width: 100px;  /* 画像の幅を指定 */
-            height: 100px; /* 画像の高さを指定 */
-            border-radius: 50%; /* 画像を丸くする */
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
         }
-
         small {
-            margin-bottom: 5px; /* 小さな余白を追加 */
+            margin-bottom: 5px;
+        }
+        .actions a {
+            margin-right: 10px;
+            color: #fff;
+            background-color: #28a745;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .actions a:hover {
+            background-color: #218838;
+        }
+        .actions .delete {
+            background-color: #dc3545;
+        }
+        .actions .delete:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
 <body>
+
     <h1>管理者ダッシュボード</h1>
+
+    <div class="logout">
+        <a href="{% url 'app:admin_logout' %}">ログアウト</a>
+    </div>
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -45,16 +88,18 @@
     <div class="aphorism-list">
         {% for aphorism in aphorisms %}
             <div class="aphorism-item">
+                <img src="{{ aphorism.picture.url }}" alt="{{ aphorism.word }}">
                 <small>名言: {{ aphorism.word }}</small>
                 <small>作者: {{ aphorism.author }}</small>
                 <small>レア度: {{ aphorism.get_rarity_display }}</small>
-                <!-- 日時表示をフォーマットする -->
                 <small>追加日時: {{ aphorism.created_date|date:"Y/n/j-G:i" }}</small>
-                <a href="{% url 'app:edit_aphorism' aphorism.pk %}">編集</a>
-                <a href="{% url 'app:delete_aphorism' aphorism.pk %}">削除</a>
-                <img src="{{ aphorism.picture.url }}" alt="{{ aphorism.word }}">
+                <div class="actions">
+                    <a href="{% url 'app:edit_aphorism' aphorism.pk %}">編集</a>
+                    <a href="{% url 'app:delete_aphorism' aphorism.pk %}" class="delete">削除</a>
+                </div>
             </div>
         {% endfor %}
     </div>
+
 </body>
 </html>

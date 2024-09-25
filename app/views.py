@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import AphorismForm
 from .models import Aphorism
-
+from django.contrib.auth import logout
 
 
 def admin_login(request):
@@ -33,6 +33,15 @@ def admin_login(request):
         form = AdminLoginForm()
     
     return render(request, 'admin_login.html', {'form': form})
+
+
+
+@login_required
+def admin_logout(request):
+    logout(request)
+    messages.success(request, 'ログアウトしました。')
+    return redirect('app:admin_login')  # ログアウト後にログインページにリダイレクト
+
 
 
 @login_required
