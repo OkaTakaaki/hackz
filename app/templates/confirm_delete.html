@@ -1,0 +1,18 @@
+<!-- confirm_delete.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>削除確認</title>
+</head>
+<body>
+    <h1>削除確認</h1>
+    <p>本当に「{{ aphorism.word }}」を削除しますか？</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">削除</button>
+    </form>
+    <a href="{% url 'app:admin_dashboard' %}">ダッシュボードに戻る</a>
+</body>
+</html>
