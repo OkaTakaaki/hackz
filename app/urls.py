@@ -13,4 +13,5 @@ urlpatterns = [
     path('input_goal/<int:year>/<int:month>/<int:day>/', views.detail_day, name='input_goal'),
     path('mycalendar/<int:year>/<int:month>/', views.MyCalendar.as_view(), name='mycalendar'),
     path('mycalendar/<int:year>/<int:month>/<int:day>/', views.MyCalendarWithDate.as_view(), name='mycalendar_with_date'),  # 別のビューを使う
+    path('plot/<int:year>/<int:month>/', views.plot, name='plot'),
 ]

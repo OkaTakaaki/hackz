@@ -267,3 +267,65 @@ class MyCalendarWithDate(View):
             'goal_form': form,  # フォームをコンテキストに追加
         }
         return render(request, 'app/mycalendar_with_date.html', context)
+    
+from django.shortcuts import render
+import io
+import matplotlib
+from datetime import datetime, timedelta
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import base64
+from django.contrib.auth.decorators import login_required
+from app.models import Goal
+import calendar
+
+def create_graph(x_list, y_list):
+    plt.cla()
+    plt.plot(y_list, x_list, label="モチベーション")
+    plt.ylim(0, 10)  # y軸の範囲を0から100に固定
+    plt.yticks(range(0, 11, 1))  # 0から10まで1刻みで目盛りを表示
+    plt.xlabel('日付')
+    plt.ylabel('モチベーション')
+    plt.xticks(rotation=45)  # 日付を回転して見やすくする
+
+def get_image():
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    image_png = buffer.getvalue()
+    graph = base64.b64encode(image_png)
+    graph = graph.decode('utf-8')
+    buffer.close()
+    return graph
+
+@login_required
+def plot(request, year, month):
+    # 現在ログインしているユーザーの目標を取得し、作成日順にソート
+    goals = Goal.objects.filter(user=request.user, created_at__year=year, created_at__month=month).order_by('created_at')
+
+    # 達成度と日付のリストを作成
+    x_list = [goal.motivation for goal in goals]
+    y_list = [goal.created_at.strftime('%m/%d') for goal in goals]  # 日付をフォーマット
+
+    # グラフを作成
+    create_graph(x_list, y_list)
+    graph = get_image()
+
+    # 現在の月
+    current_date = datetime(year, month, 1)
+
+    # 先月と次月の計算
+    previous_month = current_date - timedelta(days=1)
+    next_month = current_date + timedelta(days=calendar.monthrange(year, month)[1])
+
+    # テンプレートに渡すコンテキスト
+    context = {
+        'graph': graph,
+        'year': year,
+        'month': month,
+        'previous_year': previous_month.year,
+        'previous_month': previous_month.month,
+        'next_year': next_month.year,
+        'next_month': next_month.month,
+    }
+
+    return render(request, 'app/plot.html', context)
