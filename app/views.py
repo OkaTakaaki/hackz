@@ -120,12 +120,10 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
         week_calendar_context = self.get_week_calendar()
         month_calendar_context = self.get_month_calendar()
 
-        # year と month をコンテキストに追加
         context['year'] = self.kwargs.get('year', timezone.now().year)
         context['month'] = self.kwargs.get('month', timezone.now().month)
         context['day'] = self.kwargs.get('day', timezone.now().day)
 
-        # detail_dayからfilter_goalを取得
         selectday = date(context['year'], context['month'], context['day'])
         filter_goal = Goal.objects.filter(created_at__date=selectday).first()
         context['filter_goal'] = filter_goal
@@ -135,17 +133,17 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
         return context    
 
     def form_valid(self, form):
-        month = self.kwargs.get('month')
         year = self.kwargs.get('year')
+        month = self.kwargs.get('month')
         day = self.kwargs.get('day')
         
-        if month and year and day:
-            date_obj = date(year=int(year), month=int(month), day=int(day))  # 修正
+        if year and month and day:
+            date_obj = date(int(year), int(month), int(day))
         else:
             date_obj = date.today()
 
         schedule = form.save(commit=False)
-        schedule.date = date_obj  # 修正
+        schedule.date = date_obj
         schedule.save()
 
         return redirect('app:mycalendar', year=date_obj.year, month=date_obj.month)
@@ -155,32 +153,32 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
         year = self.kwargs.get('year', date.today().year)
         month = self.kwargs.get('month', date.today().month)
 
-        # 月の最初の日と最後の日を取得
-        first_day = date(year, month, 1)
-        last_day = (first_day + timedelta(days=31)).replace(day=1) - timedelta(days=1)
-        
-        # 月の初めの日から最後の日までのすべての日を取得
+        # 月の最初の日の曜日と、月の日数を取得
+        first_day_of_week, num_days_in_month = calendar.monthrange(year, month)
+
+        # 月の最初の日の曜日を基に空白のセルを挿入
         month_days = []
         week = []
-        
-        # カレンダーを埋めるための空のセルを追加
-        for _ in range(first_day.weekday()):
-            week.append(0)  # 空白のセル
 
-        for day in range(1, last_day.day + 1):
+        # 空白のセルを追加（最初の週の開始前の曜日分）
+        for _ in range(first_day_of_week):
+            week.append(0)
+
+        # 日付を埋めていく
+        for day in range(1, num_days_in_month + 1):
             week.append(day)
-            if len(week) == 7:  # 1週間分のセルが埋まったら
+            if len(week) == 7:  # 1週間分が埋まったら
                 month_days.append(week)
-                week = []  # 新しい週を開始
+                week = []
 
         # 月が終了した後の空白セルを追加
         while len(week) < 7:
             week.append(0)  # 空白のセル
 
-        if week:  # もし残りの週があれば追加
+        if week:  # 残りの週があれば追加
             month_days.append(week)
 
-        # スケジュールデータを取得
+        # スケジュールデータを取得（ダミー）
         month_schedule_data = self.get_schedules_for_month(year, month)
 
         return {
@@ -192,7 +190,7 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
         """指定した月のスケジュールを取得する（ダミー関数）"""
         # 実際のスケジュールデータを取得する処理を実装
         return {date(year, month, day): [] for day in range(1, calendar.monthrange(year, month)[1] + 1)}
-
+    
 class MyCalendar(View):
     def get(self, request, year, month):
         # 月の日数を取得

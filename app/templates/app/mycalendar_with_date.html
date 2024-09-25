@@ -6,8 +6,8 @@
     <h2 class="text-center">{{ year }}年 {{ month }}月 {{ day }}日</h2>
 
     {% if goal %}
-        <h3>登録されている目標: {{ goal.objective }}</h3>
-        <h3>モチベーション: {{ goal.motivation }}</h3>
+        <h5>登録されている目標: {{ goal.objective }}</h5>
+        <h5>モチベーション: {{ goal.motivation }}</h5>
         <form method="post">
             {% csrf_token %}
             <!-- hidden フィールドの設定 -->
@@ -15,13 +15,13 @@
             {{ goal_form.motivation.as_hidden }}
             
             <div class="form-group">
-                <h3>{{ goal_form.achievement.label_tag }}
-                {{ goal_form.achievement }}</h3>
-                <h4><span class="text-muted">0から100の範囲で入力してください。</span></h4>
+                <h5>{{ goal_form.achievement.label_tag }}
+                    <span id="achievement-value">{{ form.achievement.value }}</span>{{ goal_form.achievement }}</h5>
+                <h5><span class="text-muted">0から100の範囲で入力してください。</span></h5>
             </div>
             <div class="form-group">
-                <h3>{{ goal_form.turned.label_tag }}
-                {{ goal_form.turned }}</h3>
+                <h5>{{ goal_form.turned.label_tag }}
+                {{ goal_form.turned }}</h5>
             </div>
             <button type="submit" class="btn btn-primary">保存</button>
         </form>
@@ -29,23 +29,43 @@
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <h3>{{ goal_form.objective.label_tag }}
-                {{ goal_form.objective }}</h3>
+                <h5>{{ goal_form.objective.label_tag }}
+                {{ goal_form.objective }}</h5>
             </div>
             <div class="form-group">
-                <h3>{{ goal_form.motivation.label_tag }}
-                {{ goal_form.motivation }}</h3>  <!-- モチベーションと目標の入力フォーム -->
+                <h5>{{ goal_form.motivation.label_tag }}
+                    <span id="motivation-value">{{ form.motivation.value }}</span> {{ goal_form.motivation }}</h5>
             </div>
             <div class="form-group">
-                <h3>{{ goal_form.achievement.label_tag }}はまだ入力できません
-                {{ goal_form.achievement.as_hidden }}</h3>
+                <h5>{{ goal_form.achievement.label_tag }}はまだ入力できません
+                {{ goal_form.achievement.as_hidden }}</h5>
             </div>
             <div class="form-group">
-                <h3>{{ goal_form.turned.label_tag }}はまだ入力できません
-                {{ goal_form.turned.as_hidden }}</h3>  <!-- モチベーションと目標の入力フォーム -->
+                <h5>{{ goal_form.turned.label_tag }}はまだ入力できません
+                {{ goal_form.turned.as_hidden }}</h5>  <!-- モチベーションと目標の入力フォーム -->
             </div>
             <button type="submit" class="btn btn-primary">保存</button>
         </form>
     {% endif %}
 </div>
+<!-- スライダーの値をリアルタイムで表示するためのJavaScript -->
+<script>
+    var motivationSlider = document.getElementById('id_motivation');
+    if (motivationSlider) {
+        var motivationValue = document.getElementById('motivation-value');
+        motivationValue.innerHTML = motivationSlider.value || 50;  // 初期値を50に設定する
+        motivationSlider.oninput = function() {
+            motivationValue.innerHTML = this.value;
+        }
+    }
+
+    var achievementSlider = document.getElementById('id_achievement');
+    if (achievementSlider) {
+        var achievementValue = document.getElementById('achievement-value');
+        achievementValue.innerHTML = achievementSlider.value || 50;  // 初期値を50に設定する
+        achievementSlider.oninput = function() {
+            achievementValue.innerHTML = this.value;
+        }
+    }
+</script>
 {% endblock %}

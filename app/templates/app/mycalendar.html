@@ -6,11 +6,8 @@
     <h1 class="text-center">カレンダー</h1>
 
     <div class="month-calendar">
-        <h2 class="text-center">{{ year }}年 {{ month }}月</h2>
-        <div>
-            <a href="{% url 'app:mycalendar' year=previous_year month=previous_month %}">前月</a>
-            <a href="{% url 'app:mycalendar' year=next_year month=next_month %}">次月</a>
-        </div>
+        <h2 class="text-center"><a class="btn btn-primary" href="{% url 'app:mycalendar' year=previous_year month=previous_month %}" role="button">前月</a>  {{ year }}年 {{ month }}月  <a class="btn btn-primary" href="{% url 'app:mycalendar' year=next_year month=next_month %}" role="button">次月</a></h2>
+
         <table class="table table-bordered">
             <thead class="thead-light">
                 <tr>
