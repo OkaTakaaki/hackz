@@ -35,6 +35,7 @@ class Goal(models.Model):
         blank=True,  # フォームで空欄を許可
         null=True    # データベースでnullを許可
     )
+    number = models.IntegerField(verbose_name="件数", blank=True, null=True)
     turned = models.CharField(verbose_name="振り返り", max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(verbose_name="作成日")
 
