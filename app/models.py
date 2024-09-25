@@ -101,8 +101,7 @@ class Aphorism(models.Model):
 class Goal(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     motivation = models.IntegerField(
-        verbose_name="モチベーション", 
-        validators=[MinValueValidator(0), MaxValueValidator(10)],  # 0から10の範囲に制限
+        verbose_name="モチベーション",
         blank=True,  # フォームで空欄を許可
         null=True    # データベースでnullを許可
     )

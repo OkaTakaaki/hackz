@@ -25,6 +25,11 @@ import matplotlib.pyplot as plt
 import base64
 from app.models import Goal
 import calendar
+from django.shortcuts import render
+from django.http import JsonResponse
+from google.cloud import language_v1
+from google.oauth2 import service_account
+
 
 
 def index(request):
@@ -243,22 +248,42 @@ class MyCalendarWithDate(View):
 
     def post(self, request, year, month, day):
         goal = Goal.objects.filter(user=request.user, created_at__year=year, created_at__month=month, created_at__day=day).first()
+        
+        if len(str(month)) == 1:
+            strmonth = "0" + str(month)
+        else:
+            strmonth = str(month) 
 
+        if len(str(day)) == 1:
+            strday = "0" + str(day)
+        else:
+            strday = str(day)
+
+        create = str(year) + "-" + strmonth + "-" + strday
+        newtime = timezone.now()
+        
+        # 'text' フィールドのデータを取得
+        input_text = request.POST.get('text', '')  # フォームから送信されたテキストエリアの値
+        print(input_text)
+        point = analyze_sentiment(input_text)
+        
         # 新規目標のフォームを作成
         if goal:
             form = GoalForm(request.POST, instance=goal)  # 既存の目標を更新
+            
         else:
             form = GoalForm(request.POST)  # 新しい目標のフォームを作成
 
         if form.is_valid():
-            # 既存の目標を更新または新しい目標を作成
+        # 既存の目標を更新または新しい目標を作成
             goal = form.save(commit=False)
+            goal.motivation = point
             goal.user = request.user
             if not goal.created_at:
-                goal.created_at = timezone.now()  # 新しい場合は日時を設定
+                goal.created_at = create + " " + str(newtime.time())  # 新しい場合は日時を設定
             goal.save()
             return redirect('app:mycalendar', year=year, month=month)
-
+        
         # バリデーションエラーがある場合、再度フォームを表示
         context = {
             'year': year,
@@ -268,15 +293,15 @@ class MyCalendarWithDate(View):
             'goal_form': form,
         }
         return render(request, 'app/mycalendar_with_date.html', context)
-
+    
 def create_graph(x_list, y_list):
     plt.cla()
-    plt.plot(y_list, x_list, label="モチベーション")
+    plt.plot(y_list, x_list, label="motivation", color='red', linestyle='-', linewidth=2)  # 線の色を赤に、スタイルを実線に、太さを2に設定
     plt.ylim(0, 10)  # y軸の範囲を0から100に固定
     plt.yticks(range(0, 11, 1))  # 0から10まで1刻みで目盛りを表示
-    plt.xlabel('日付')
-    plt.ylabel('モチベーション')
-    plt.xticks(rotation=45)  # 日付を回転して見やすくする
+    plt.xlabel('day')
+    plt.ylabel('motivation')
+    plt.xticks(rotation=0)  # 日付を回転して見やすくする
 
 def get_image():
     buffer = io.BytesIO()
@@ -292,13 +317,18 @@ def plot(request, year, month):
     # 現在ログインしているユーザーの目標を取得し、作成日順にソート
     goals = Goal.objects.filter(user=request.user, created_at__year=year, created_at__month=month).order_by('created_at')
 
-    # 達成度と日付のリストを作成
+    # モチベーションと日付のリストを作成
     x_list = [goal.motivation for goal in goals]
     y_list = [goal.created_at.strftime('%m/%d') for goal in goals]  # 日付をフォーマット
 
-    # グラフを作成
-    create_graph(x_list, y_list)
-    graph = get_image()
+    # グラフを表示するかどうかのチェック
+    if len(x_list) == 0 or all(motivation is None for motivation in x_list):
+        # データがない場合の処理
+        graph = None
+    else:
+        # グラフを作成
+        create_graph(x_list, y_list)
+        graph = get_image()
 
     # 現在の月
     current_date = datetime(year, month, 1)
@@ -419,49 +449,44 @@ def delete_aphorism(request, pk):
     return render(request, 'confirm_delete.html', {'aphorism': aphorism})
 
 
-
-# views.py
-
-from django.shortcuts import render
-from django.http import JsonResponse
-from google.cloud import language_v1
-from google.oauth2 import service_account
-
-def analyze_sentiment(request):
-    if request.method == 'POST':
-        text = request.POST.get('text')  # フォームからテキストを取得
+def analyze_sentiment(text):
         
-        # 認証情報の設定
-        credentials = service_account.Credentials.from_service_account_file(
-            "C:\\Users\\t_oka\\trusty-coder-436713-n0-bbe31e8f6af0.json"  # サービスアカウントファイルのパス
-        )
+    # 認証情報の設定
+    credentials = service_account.Credentials.from_service_account_file(
+        "C:\\Users\\t_oka\\trusty-coder-436713-n0-bbe31e8f6af0.json"  # サービスアカウントファイルのパス
+    )
 
-        client = language_v1.LanguageServiceClient(credentials=credentials)
+    client = language_v1.LanguageServiceClient(credentials=credentials)
 
-        # テキストの分析リクエスト
-        document = language_v1.Document(content=text, type_=language_v1.Document.Type.PLAIN_TEXT)
-        response = client.analyze_sentiment(request={"document": document})
+    # テキストの分析リクエスト
+    document = language_v1.Document(content=text, type_=language_v1.Document.Type.PLAIN_TEXT)
+    response = client.analyze_sentiment(request={"document": document})
 
-        # 感情分析結果を取得
-        sentiment = response.document_sentiment
-        result = {
-            "score": sentiment.score,  # 感情スコア
-            "magnitude": sentiment.magnitude  # 感情の強さ
-        }
-        print("-------------------------{}-------------------------".format(sentiment.magnitude))
-        if sentiment.score < -0.5:
-            print("非常にネガティブな感情")
-        elif sentiment.score < -0.1:
-            print("ネガティブな感情")
-        elif sentiment.score < 0.1:
-            print("普通な感情")
-        elif sentiment.score < 0.5:
-            print("ポジティブな感情")
-        elif sentiment.score < 0.8:
-            print("非常にポジティブな感情")
-        elif sentiment.score >= 0.8:
-            print("極めてポジティブな感情")
+    # 感情分析結果を取得
+    sentiment = response.document_sentiment
+    result = {
+        "score": sentiment.score,  # 感情スコア
+        "magnitude": sentiment.magnitude  # 感情の強さ
+    }
+    print("-------------------------{}-------------------------".format(sentiment.magnitude))
+    if sentiment.score < -0.5:
+        print("非常にネガティブな感情")
+        point = 1
+    elif sentiment.score < -0.1:
+        print("ネガティブな感情")
+        point = 2
+    elif sentiment.score < 0.1:
+        print("普通な感情")
+        point = 3
+    elif sentiment.score < 0.5:
+        print("ポジティブな感情")
+        point = 4
+    elif sentiment.score < 0.8:
+        print("非常にポジティブな感情")
+        point = 5
+    elif sentiment.score >= 0.8:
+        print("極めてポジティブな感情")
+        point = 6
 
-        return JsonResponse(result)  # 結果をJSONで返す
+    return point  # 結果をJSONで返す
 
-    return render(request, 'app/your_template.html')  # GETリクエストの場合はテンプレートをレンダリング
