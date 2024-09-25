@@ -1,6 +1,6 @@
-<div>
-    <h1>{{ year }}年{{ month }}月のグラフ</h1>
-    <img src="data:image/png;base64,{{ graph }}" alt="グラフ">
-</div>
+<h1>{{ year }}年{{ month }}月のグラフ</h1>
 <a href="/plot/{{previous_year}}/{{previous_month}}">先月へ</a>
 <a href="/plot/{{next_year}}/{{next_month}}">翌月へ</a>
+<div>
+    <img src="data:image/png;base64,{{ graph }}" alt="グラフ">
+</div>
