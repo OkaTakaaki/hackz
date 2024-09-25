@@ -257,13 +257,3 @@ class MyCalendarWithDate(View):
             'goal_form': form,
         }
         return render(request, 'app/mycalendar_with_date.html', context)
-
-
-        context = {
-            'year': year,
-            'month': month,
-            'day': day,
-            'goal': goal,
-            'goal_form': form,  # フォームをコンテキストに追加
-        }
-        return render(request, 'app/mycalendar_with_date.html', context)
