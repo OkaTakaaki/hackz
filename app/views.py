@@ -11,6 +11,7 @@ from .forms import CollectionForm
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 
 
 def index(request):
@@ -51,9 +52,10 @@ def signin(request):
             return render(request, 'signin.html', {'error_message': 'パスワードが正しくありません。'})
     else:
         return render(request, 'signin.html')
-
+@login_required
 def signout(request):
     logout(request)
+    messages.success(request, 'ログアウトしました')
     return HttpResponseRedirect('/')
 
 def home(request):
@@ -68,5 +70,20 @@ class ViewCollectionList(ListView):
     context_object_name = 'collections'  # テンプレート内で使うオブジェクト名
 
     def get_queryset(self):
-        # rarityで昇順にソートしてクエリを返す
-        return Collection.objects.filter(user=self.request.user).order_by('rarity')
+        # ユーザーのコレクションを取得
+        queryset = Collection.objects.filter(user=self.request.user)
+
+        # フィルタリング条件を取得
+        author = self.request.GET.get('author')
+        acquision_date = self.request.GET.get('acquision_date')
+        rarity = self.request.GET.get('rarity')
+
+        # 各フィールドが指定されていた場合、絞り込みを適用
+        if author:
+            queryset = queryset.filter(author__icontains=author)
+        if acquision_date:
+            queryset = queryset.filter(acquision_date__date=acquision_date)
+        if rarity:
+            queryset = queryset.filter(rarity=rarity)
+
+        return queryset.order_by('rarity')
