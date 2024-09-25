@@ -1,8 +1,13 @@
 from django import forms
 from .models import Schedule
+from .models import Collection
 from django import forms
 from .models import Goal
 
+class CollectionForm(forms.ModelForm):
+    class Meta:
+        model = Collection
+        fields = ['word', 'author', 'picture', 'acquision_date']
 
 class BS4ScheduleForm(forms.ModelForm):
     """Bootstrapに対応するためのModelForm"""
@@ -33,6 +38,7 @@ class BS4ScheduleForm(forms.ModelForm):
                 '終了時間は、開始時間よりも後にしてください'
             )
         return end_time
+
 
 class GoalForm(forms.ModelForm):
     class Meta:

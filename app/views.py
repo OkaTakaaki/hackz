@@ -1,17 +1,26 @@
+from msilib.schema import ListView
 from unittest import loader
 from django.shortcuts import render, redirect
 from django.template import loader
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import login, logout, authenticate
-from app.models import CustomUser, Goal
+from app.models import CustomUser, Goal, Collection
 from django.contrib.auth.decorators import login_required
-from .forms import GoalForm
+from .forms import GoalForm, CollectionForm
 import datetime
 from django.views import generic
 from . import mixins
 from .forms import BS4ScheduleForm
 import calendar
 from .models import Schedule
+import io
+import matplotlib
+from datetime import datetime, timedelta
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import base64
+import calendar
+
 
 def index(request):
     context = {'user': request.user}
@@ -116,7 +125,7 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
         today = datetime.date.today()
         month_days = calendar.monthcalendar(today.year, today.month)
 
-        # 各日のスケジュールを取得する処理を追加することができます
+         # 各日のスケジュールを取得する処理を追加することができます
         month_schedule_data = self.get_schedules_for_month(today.year, today.month)
 
         return {
@@ -128,18 +137,31 @@ class MyCalendar(mixins.BaseCalendarMixin, mixins.WeekWithScheduleMixin, generic
         """指定した月のスケジュールを取得する（ダミー関数）"""
         # 実際のスケジュールデータを取得する処理を実装
         return {}
-    
-from django.shortcuts import render
-import io
-import matplotlib
-from datetime import datetime, timedelta
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import base64
-from django.contrib.auth.decorators import login_required
-from app.models import Goal
-import calendar
 
+class ViewCollectionList(ListView):
+    model = Collection
+    template_name = 'collection_list.html'  # テンプレート名
+    context_object_name = 'collections'  # テンプレート内で使うオブジェクト名
+
+    def get_queryset(self):
+        # ユーザーのコレクションを取得
+        queryset = Collection.objects.filter(user=self.request.user)
+    
+        # フィルタリング条件を取得
+        author = self.request.GET.get('author')
+        acquision_date = self.request.GET.get('acquision_date')
+        rarity = self.request.GET.get('rarity')
+
+        # 各フィールドが指定されていた場合、絞り込みを適用
+        if author:
+            queryset = queryset.filter(author__icontains=author)
+        if acquision_date:
+            queryset = queryset.filter(acquision_date__date=acquision_date)
+        if rarity:
+            queryset = queryset.filter(rarity=rarity)
+
+        return queryset.order_by('rarity')
+    
 def create_graph(x_list, y_list):
     plt.cla()
     plt.plot(y_list, x_list, label="達成度")
