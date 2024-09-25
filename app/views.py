@@ -25,6 +25,8 @@ import matplotlib.pyplot as plt
 import base64
 from app.models import Goal
 import calendar
+import random
+
 
 
 def index(request):
@@ -258,6 +260,37 @@ class MyCalendarWithDate(View):
         # 新規目標のフォームを作成
         if goal:
             form = GoalForm(request.POST, instance=goal)  # 既存の目標を更新
+
+
+            goal.flag = True
+            user = request.user  # 現在のログインユーザーを取得
+            kai = Goal.objects.filter(user=user, flag=True).count()
+           
+            if kai % 5 == 0:
+                aphorisms = list(Aphorism.objects.all())
+
+                if aphorisms:  # aphorismsが空でないことを確認
+                    selected_aphorism = random.choice(aphorisms)
+
+                    current_date = timezone.now()
+
+                    # Collectionのインスタンスを作成
+                    collection_instance = Collection.objects.create(
+                        user=request.user,
+                        word=selected_aphorism.word,
+                        author=selected_aphorism.author,
+                        picture=selected_aphorism.picture,
+                        acquisition_date=current_date,  # スペルを修正
+                        rarity=selected_aphorism.rarity,
+                    )
+                    
+                    # 直接create()メソッドを使用するため、save()は不要
+
+                else:
+                    # aphorismsが空の場合の処理を追加
+                    print("Aphorismのリストが空です。")
+
+
         else:
             form = GoalForm(request.POST)  # 新しい目標のフォームを作成
 

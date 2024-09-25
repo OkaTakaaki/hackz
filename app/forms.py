@@ -66,4 +66,4 @@ class AphorismForm(forms.ModelForm):
 class CollectionForm(forms.ModelForm):
     class Meta:
         model = Collection
-        fields = ['word', 'author', 'picture', 'acquision_date']
+        fields = ['user', 'word', 'author', 'picture', 'acquisition_date', 'rarity'] 
