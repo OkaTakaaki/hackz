@@ -295,13 +295,27 @@ class MyCalendarWithDate(View):
         return render(request, 'app/mycalendar_with_date.html', context)
     
 def create_graph(x_list, y_list):
-    plt.cla()
-    plt.plot(y_list, x_list, label="motivation", color='red', linestyle='-', linewidth=2)  # 線の色を赤に、スタイルを実線に、太さを2に設定
-    plt.ylim(0, 10)  # y軸の範囲を0から100に固定
-    plt.yticks(range(0, 11, 1))  # 0から10まで1刻みで目盛りを表示
+    plt.cla()  # グラフをクリア
+    plt.figure(figsize=(10, 4))  # グラフの横長を設定（幅10インチ、高さ4インチ）
+    
+    # グラフの描画
+    plt.plot(y_list, x_list, label="motivation", color='red', linestyle='-', linewidth=2)
+    
+    # 軸の設定
+    plt.ylim(1, 6)  # y軸の範囲を1から6に固定
+    plt.yticks(range(1, 6, 1))  # 1から6まで1刻みで目盛りを表示
     plt.xlabel('day')
     plt.ylabel('motivation')
-    plt.xticks(rotation=0)  # 日付を回転して見やすくする
+    
+    # グリッド線を追加（必要に応じて）
+    plt.grid(True)
+
+    # 背景を透明にする
+    plt.gca().patch.set_alpha(0)  # グラフ内の背景を透明に
+    plt.gcf().patch.set_alpha(0)  # 全体の背景も透明に
+
+    # 日付の表示を調整
+    plt.xticks(rotation=0)  # 日付を回転して見やすく
 
 def get_image():
     buffer = io.BytesIO()

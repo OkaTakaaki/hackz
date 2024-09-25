@@ -1,56 +1,92 @@
 {% extends 'app/base.html' %}
 
 {% block content %}
-<div class="mt-3">
-    <h1 class="text-center">目標入力</h1>
-    <h2 class="text-center">{{ year }}年 {{ month }}月 {{ day }}日</h2>
+<div class="container mt-5">
+    <div class="text-center">
+        <h1>目標入力</h1>
+        <h2>{{ year }}年 {{ month }}月 {{ day }}日</h2>
+    </div>
 
-    {% if goal %}
-        <h3>登録されている目標: {{ goal.objective }}</h3>
-        <h3>モチベーション: {{ goal.motivation }}</h3>
-        <form method="post">
-            {% csrf_token %}
-            <!-- hidden フィールドの設定 -->
-            {{ goal_form.objective.as_hidden }}
-            {{ goal_form.motivation.as_hidden }}
-            
-            <div class="form-group">
-                <h3>{{ goal_form.achievement.label_tag }}
-                {{ goal_form.achievement }}</h3>
-                <h4><span class="text-muted">0から100の範囲で入力してください。</span></h4>
-            </div>
-            <div class="form-group">
-                <h3>{{ goal_form.turned.label_tag }}
-                {{ goal_form.turned }}</h3>
-            </div>
-            <button type="submit" class="btn btn-primary">保存</button>
-        </form>
-    {% else %}
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <h3>{{ goal_form.objective.label_tag }}
-                {{ goal_form.objective }}</h3>
-            </div>
-            <div class="form-group">
-                {{ goal_form.motivation.as_hidden }}  <!-- モチベーションと目標の入力フォーム -->
-            </div>
-            <div class="form-group">
-                <h3>今日の意気込み（モチベーションとして自動で判定）</h3>
-                <textarea name="text" rows="4" cols="50" placeholder="テキストを入力してください"></textarea><br>
-            </div>
-            
-            <div class="form-group">
-                <h3>{{ goal_form.achievement.label_tag }}はまだ入力できません
-                {{ goal_form.achievement.as_hidden }}</h3>
-            </div>
-            <div class="form-group">
-                <h3>{{ goal_form.turned.label_tag }}はまだ入力できません
-                {{ goal_form.turned.as_hidden }}</h3>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">保存</button>
-        </form>
-    {% endif %}
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            {% if goal %}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="form-label">登録されている目標</label>
+                                    <p class="form-control-plaintext">{{ goal.objective }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="form-label">モチベーション</label>
+                                    <p class="form-control-plaintext">6段階中：{{ goal.motivation }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ goal_form.objective.as_hidden }}
+                            {{ goal_form.motivation.as_hidden }}
+
+                            <div class="form-group mt-4">
+                                <label for="achievement" class="form-label">{{ goal_form.achievement.label_tag }}</label>
+                                {{ goal_form.achievement }}
+                                <small class="form-text text-muted">0から100の範囲で入力してください。</small>
+                            </div>
+
+                            <div class="form-group mt-3">
+                                <label for="turned" class="form-label">{{ goal_form.turned.label_tag }}</label>
+                                {{ goal_form.turned }}
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">保存</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="objective" class="form-label">{{ goal_form.objective.label_tag }}</label>
+                                {{ goal_form.objective }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ goal_form.motivation.as_hidden }}
+                            </div>
+
+                            <div class="form-group mt-3">
+                                <label for="motivation" class="form-label">今日の意気込み（モチベーションとして自動で判定）</label>
+                                <textarea name="text" class="form-control" rows="4" placeholder="テキストを入力してください"></textarea>
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <label class="form-label">{{ goal_form.achievement.label_tag }}はまだ入力できません</label>
+                                {{ goal_form.achievement.as_hidden }}
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <label class="form-label">{{ goal_form.turned.label_tag }}はまだ入力できません</label>
+                                {{ goal_form.turned.as_hidden }}
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">保存</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}
