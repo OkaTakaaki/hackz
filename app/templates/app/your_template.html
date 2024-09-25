@@ -1,0 +1,21 @@
+<!-- your_template.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>感情分析</title>
+</head>
+<body>
+    <h1>感情分析</h1>
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="text" rows="4" cols="50" placeholder="テキストを入力してください"></textarea><br>
+        <button type="submit">分析</button>
+    </form>
+    
+    {% if result %}
+        <h2>分析結果:</h2>
+        <pre>{{ result|safe }}</pre>
+    {% endif %}
+</body>
+</html>

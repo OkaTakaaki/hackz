@@ -417,3 +417,38 @@ def delete_aphorism(request, pk):
         return redirect('app:admin_dashboard')
     
     return render(request, 'confirm_delete.html', {'aphorism': aphorism})
+
+
+
+# views.py
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from google.cloud import language_v1
+from google.oauth2 import service_account
+
+def analyze_sentiment(request):
+    if request.method == 'POST':
+        text = request.POST.get('text')  # フォームからテキストを取得
+        
+        # 認証情報の設定
+        credentials = service_account.Credentials.from_service_account_file(
+            "C:\\Users\\t_oka\\trusty-coder-436713-n0-bbe31e8f6af0.json"  # サービスアカウントファイルのパス
+        )
+
+        client = language_v1.LanguageServiceClient(credentials=credentials)
+
+        # テキストの分析リクエスト
+        document = language_v1.Document(content=text, type_=language_v1.Document.Type.PLAIN_TEXT)
+        response = client.analyze_sentiment(request={"document": document})
+
+        # 感情分析結果を取得
+        sentiment = response.document_sentiment
+        result = {
+            "score": sentiment.score,  # 感情スコア
+            "magnitude": sentiment.magnitude  # 感情の強さ
+        }
+
+        return JsonResponse(result)  # 結果をJSONで返す
+
+    return render(request, 'app/your_template.html')  # GETリクエストの場合はテンプレートをレンダリング
