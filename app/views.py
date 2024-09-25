@@ -243,6 +243,19 @@ class MyCalendarWithDate(View):
 
     def post(self, request, year, month, day):
         goal = Goal.objects.filter(user=request.user, created_at__year=year, created_at__month=month, created_at__day=day).first()
+        
+        if len(str(month)) == 1:
+            strmonth = "0" + str(month)
+        else:
+            strmonth = str(month) 
+
+        if len(str(day)) == 1:
+            strday = "0" + str(day)
+        else:
+            strday = str(day)
+
+        create = str(year) + "-" + strmonth + "-" + strday
+        newtime = timezone.now()
 
         # 新規目標のフォームを作成
         if goal:
@@ -255,7 +268,7 @@ class MyCalendarWithDate(View):
             goal = form.save(commit=False)
             goal.user = request.user
             if not goal.created_at:
-                goal.created_at = timezone.now()  # 新しい場合は日時を設定
+                goal.created_at = create + " " + str(newtime.time())  # 新しい場合は日時を設定
             goal.save()
             return redirect('app:mycalendar', year=year, month=month)
 
