@@ -374,6 +374,20 @@ class ViewCollectionList(ListView):
 
         return queryset.order_by('rarity')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Aphorismテーブルの総数（分母）
+        total_aphorisms = Aphorism.objects.count()
+        
+        # 現在のユーザーのコレクション数（分子）
+        user_collections_count = Collection.objects.filter(user=self.request.user).count()
+        
+        # コンテキストに追加
+        context['total_aphorisms'] = total_aphorisms
+        context['user_collections_count'] = user_collections_count
+        
+        return context
 def admin_login(request):
     if request.method == 'POST':
         form = AdminLoginForm(request.POST)

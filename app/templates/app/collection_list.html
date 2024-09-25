@@ -1,12 +1,31 @@
 {% extends "app/base.html" %}
-
+ 
 {% block content %}
-<h1>コレクションリスト</h1>
+<h1 class="centered-header">コレクションリスト</h1>
 
-<div style="color: red;">「コレクションリスト！！もっと熱くなれよ！！そのコレクション、君だけの宝物だろ！？ただのリストじゃない！そこに込めた情熱、努力、そして成長の証が詰まってるんだ！もっと声出していけ！！ひとつひとつのコレクションが君を強くするんだ！！燃えていけぇぇぇ！！」</div>
+<!-- コレクション状況セクション -->
+<div class="collection-status">
+    <h2>コレクション状況</h2>
+    <p>
+        {% if user_collections_count == total_aphorisms %}
+            コンプリート！おめでとう！
+
+        {% if user_collections_count == 0}
+            0/{{ total_aphorisms}}
+
+        {% else %}
+            {{ user_collections_count }}/{{ total_aphorisms }}
+        {% endif %}
+    </p>
+</div>
+
+<!-- その他のコンテンツ -->
+<div style="color: red;">
+    「コレクションリスト！！もっと熱くなれよ！！そのコレクション、君だけの宝物だろ！？ただのリストじゃない！そこに込めた情熱、努力、そして成長の証が詰まってるんだ！もっと声出していけ！！ひとつひとつのコレクションが君を強くするんだ！！燃えていけぇぇぇ！！」
+</div>
 
 <!-- フィルタリングフォーム -->
-<form method="GET" action="">
+<form method="GET" action="" class="filter-form">
     <input type="text" name="author" placeholder="名前で絞り込み" value="{{ request.GET.author }}">
     <input type="date" name="acquision_date" placeholder="取得日で絞り込み" value="{{ request.GET.acquision_date }}">
     <select name="rarity">
@@ -23,13 +42,38 @@
 <!-- コレクションのリスト -->
 <div class="collection-list">
     {% for collection in collections %}
-    <div class="collection-item">
+    <div class="collection-item" onclick="showImage('{{ collection.picture.url }}', '{{ collection.word }}')">
         <h2>{{ collection.word }}</h2>
-        <p>松岡: {{ collection.author }}</p>
-        <p>取得日: {{ collection.acquision_date|date:"Y/n/j-G:i" }}</p> <!-- 日付のフォーマットを変更 -->
+        <p>著者: {{ collection.author }}</p>
+        <p>取得日: {{ collection.acquision_date|date:"Y/n/j-G:i" }}</p>
         <p>レア度: {{ collection.get_rarity_display }}</p>
         <img src="{{ collection.picture.url }}" alt="Picture of {{ collection.word }}" width="300">
     </div>
     {% endfor %}
 </div>
+
+<!-- 画像表示用のモーダル -->
+<div id="imageModal" class="modal" style="display:none;">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+    <div id="caption"></div>
+</div>
+
+<script>
+function showImage(src, title) {
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImage");
+    const captionText = document.getElementById("caption");
+   
+    modal.style.display = "flex"; // モーダルを表示
+    modalImg.src = src; // 画像のsrcを設定
+    captionText.innerHTML = title; // タイトルを設定
+}
+
+function closeModal() {
+    const modal = document.getElementById("imageModal");
+    modal.style.display = "none"; // モーダルを非表示
+}
+</script>
+
 {% endblock %}
