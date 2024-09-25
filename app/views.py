@@ -248,6 +248,17 @@ class MyCalendarWithDate(View):
             goal.save()
             return redirect('app:mycalendar', year=year, month=month)
 
+        # バリデーションエラーがある場合、再度フォームを表示
+        context = {
+            'year': year,
+            'month': month,
+            'day': day,
+            'goal': goal,
+            'goal_form': form,
+        }
+        return render(request, 'app/mycalendar_with_date.html', context)
+
+
         context = {
             'year': year,
             'month': month,
