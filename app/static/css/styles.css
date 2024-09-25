@@ -1,0 +1,21 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa; /* 背景色を薄いグレーに */
+}
+
+/* ナビゲーションバーのスタイル */
+.navbar-brand {
+    font-weight: bold;
+}
+
+.container {
+    margin-top: 20px;
+}
+
+footer {
+    margin-top: 20px;
+    padding: 10px 0;
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+}
