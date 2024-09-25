@@ -448,6 +448,19 @@ def analyze_sentiment(request):
             "score": sentiment.score,  # 感情スコア
             "magnitude": sentiment.magnitude  # 感情の強さ
         }
+        print("-------------------------{}-------------------------".format(sentiment.magnitude))
+        if sentiment.score < -0.5:
+            print("非常にネガティブな感情")
+        elif sentiment.score < -0.1:
+            print("ネガティブな感情")
+        elif sentiment.score < 0.1:
+            print("普通な感情")
+        elif sentiment.score < 0.5:
+            print("ポジティブな感情")
+        elif sentiment.score < 0.8:
+            print("非常にポジティブな感情")
+        elif sentiment.score >= 0.8:
+            print("極めてポジティブな感情")
 
         return JsonResponse(result)  # 結果をJSONで返す
 
