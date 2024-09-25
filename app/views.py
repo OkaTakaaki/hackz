@@ -142,11 +142,11 @@ import calendar
 
 def create_graph(x_list, y_list):
     plt.cla()
-    plt.plot(y_list, x_list, label="達成度")
-    plt.ylim(0, 100)  # y軸の範囲を0から100に固定
-    plt.yticks(range(0, 101, 10))  # 0から100まで10刻みで目盛りを表示
+    plt.plot(y_list, x_list, label="モチベーション")
+    plt.ylim(0, 10)  # y軸の範囲を0から100に固定
+    plt.yticks(range(0, 11, 1))  # 0から10まで1刻みで目盛りを表示
     plt.xlabel('日付')
-    plt.ylabel('達成度')
+    plt.ylabel('モチベーション')
     plt.xticks(rotation=45)  # 日付を回転して見やすくする
 
 def get_image():
@@ -164,7 +164,7 @@ def plot(request, year, month):
     goals = Goal.objects.filter(user=request.user, created_at__year=year, created_at__month=month).order_by('created_at')
 
     # 達成度と日付のリストを作成
-    x_list = [goal.achievement for goal in goals]
+    x_list = [goal.motivation for goal in goals]
     y_list = [goal.created_at.strftime('%m/%d') for goal in goals]  # 日付をフォーマット
 
     # グラフを作成
