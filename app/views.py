@@ -271,12 +271,12 @@ class MyCalendarWithDate(View):
 
 def create_graph(x_list, y_list):
     plt.cla()
-    plt.plot(y_list, x_list, label="モチベーション")
+    plt.plot(y_list, x_list, label="motivation", color='red', linestyle='-', linewidth=2)  # 線の色を赤に、スタイルを実線に、太さを2に設定
     plt.ylim(0, 10)  # y軸の範囲を0から100に固定
     plt.yticks(range(0, 11, 1))  # 0から10まで1刻みで目盛りを表示
-    plt.xlabel('日付')
-    plt.ylabel('モチベーション')
-    plt.xticks(rotation=45)  # 日付を回転して見やすくする
+    plt.xlabel('day')
+    plt.ylabel('motivation')
+    plt.xticks(rotation=0)  # 日付を回転して見やすくする
 
 def get_image():
     buffer = io.BytesIO()
@@ -292,13 +292,18 @@ def plot(request, year, month):
     # 現在ログインしているユーザーの目標を取得し、作成日順にソート
     goals = Goal.objects.filter(user=request.user, created_at__year=year, created_at__month=month).order_by('created_at')
 
-    # 達成度と日付のリストを作成
+    # モチベーションと日付のリストを作成
     x_list = [goal.motivation for goal in goals]
     y_list = [goal.created_at.strftime('%m/%d') for goal in goals]  # 日付をフォーマット
 
-    # グラフを作成
-    create_graph(x_list, y_list)
-    graph = get_image()
+    # グラフを表示するかどうかのチェック
+    if len(x_list) == 0 or all(motivation is None for motivation in x_list):
+        # データがない場合の処理
+        graph = None
+    else:
+        # グラフを作成
+        create_graph(x_list, y_list)
+        graph = get_image()
 
     # 現在の月
     current_date = datetime(year, month, 1)
