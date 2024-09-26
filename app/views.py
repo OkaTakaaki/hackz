@@ -489,4 +489,3 @@ def analyze_sentiment(text):
         point = 6
 
     return point  # 結果をJSONで返す
-
