@@ -45,7 +45,7 @@
     <div class="collection-item" onclick="showImage('{{ collection.picture.url }}', '{{ collection.word }}')">
         <h2>{{ collection.word }}</h2>
         <p>著者: {{ collection.author }}</p>
-        <p>取得日: {{ collection.acquision_date|date:"Y/n/j-G:i" }}</p>
+        <p>取得日: {{ collection.acquisition_date|date:"yy/m/d" }}</p>
         <p>レア度: {{ collection.get_rarity_display }}</p>
         <img src="{{ collection.picture.url }}" alt="Picture of {{ collection.word }}" width="300">
     </div>

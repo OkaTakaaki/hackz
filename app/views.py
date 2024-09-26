@@ -300,7 +300,6 @@ class MyCalendarWithDate(View):
                         acquisition_date=current_date,  # スペルを修正
                         rarity=selected_aphorism.rarity,
                     )
-                    return render(request, 'collection_list.html', {'message': 'しゅうぞう獲得！'})
 
                     # 直接create()メソッドを使用するため、save()は不要
 
