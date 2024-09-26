@@ -269,16 +269,25 @@ class MyCalendarWithDate(View):
         if goal:
             form = GoalForm(request.POST, instance=goal)  # 既存の目標を更新
 
-
+            RARITY_WEIGHTS = {
+                            1: 5,  # ☆1が選ばれる確率を最も高く
+                            2: 4,  # ☆2
+                            3: 3,  # ☆3
+                            4: 2,  # ☆4
+                            5: 1   # ☆5が選ばれる確率を最も低く
+                        }
+            
             goal.flag = True
             user = request.user  # 現在のログインユーザーを取得
             kai = Goal.objects.filter(user=user, flag=True).count()
-           
-            if kai % 5 == 0:
+
+            if kai % 1 == 0:
                 aphorisms = list(Aphorism.objects.all())
 
                 if aphorisms:  # aphorismsが空でないことを確認
-                    selected_aphorism = random.choice(aphorisms)
+                    # レアリティごとに重みを設定してランダムに選ぶ
+                    aphorism_weights = [RARITY_WEIGHTS[aphorism.rarity] for aphorism in aphorisms]
+                    selected_aphorism = random.choices(aphorisms, weights=aphorism_weights, k=1)[0]
 
                     current_date = timezone.now()
 
@@ -291,13 +300,13 @@ class MyCalendarWithDate(View):
                         acquisition_date=current_date,  # スペルを修正
                         rarity=selected_aphorism.rarity,
                     )
-                    
+                    return render(request, 'collection_list.html', {'message': 'しゅうぞう獲得！'})
+
                     # 直接create()メソッドを使用するため、save()は不要
 
                 else:
                     # aphorismsが空の場合の処理を追加
                     print("Aphorismのリストが空です。")
-
 
         else:
             form = GoalForm(request.POST)  # 新しい目標のフォームを作成
@@ -423,7 +432,7 @@ class ViewCollectionList(ListView):
         total_aphorisms = Aphorism.objects.count()
         
         # 現在のユーザーのコレクション数（分子）
-        user_collections_count = Collection.objects.filter(user=self.request.user).count()
+        user_collections_count = Collection.objects.filter(user=self.request.user).values('word').distinct().count()
         
         # コンテキストに追加
         context['total_aphorisms'] = total_aphorisms

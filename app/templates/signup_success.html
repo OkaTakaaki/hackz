@@ -8,7 +8,7 @@
         window.onload = function() {
             alert("{{ message }}");
             setTimeout(function() {
-                window.location.href = 'signin';
+                window.location.href = "{% url 'app:signin' %}";
             }, 500);  // 0.5秒後にリダイレクト
         };
     </script>

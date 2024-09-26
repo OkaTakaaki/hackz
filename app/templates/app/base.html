@@ -51,7 +51,11 @@
     <!-- ナビゲーションバー -->
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
+            {% if user.is_authenticated %}
+            <a class="navbar-brand" href="{% url 'app:mycalendar' year='2024' month='9' %}">しゅうぞうカレンダー</a>
+            {% else %}
             <a class="navbar-brand" href="/">しゅうぞうカレンダー</a>
+            {% endif %}
            
             <!-- ユーザーがログインしている場合、ユーザー名とカスタム画像を表示 -->
             {% if user.is_authenticated %}
@@ -63,7 +67,7 @@
                 </span>
             {% endif %}
            
- 
+            {% if user.is_authenticated %}
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -83,6 +87,18 @@
                     </li>
                 </ul>
             </div>
+            {% else %}
+            <div class="collapse navbar-collapse" id="navbarNav"></div>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'app:signup' %}">新規登録</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'app:signin' %}">ログイン</a>
+                    </li>
+                </ul>
+            </div>
+            {% endif %}
         </div>
     </nav>
  

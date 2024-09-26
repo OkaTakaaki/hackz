@@ -1,3 +1,5 @@
+{% extends "app/base.html" %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -22,6 +24,7 @@
         
         <button type="submit">サインイン</button>
     </form>
-    <p>新しいアカウントを作成しますか？ <a href="signup">新規登録はこちら</a></p>
+    <p>新しいアカウントを作成しますか？ <a href="{% url 'app:signup' %}">新規登録はこちら</a></p>
 </body>
 </html>
+{% endblock %}

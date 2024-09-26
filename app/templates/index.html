@@ -1,3 +1,5 @@
+{% extends "app/base.html" %}
+{% block content %}
 {% if user.is_authenticated %}
 <div>
   <h3>{{ user }}さんこんにちは！<h3>
@@ -12,3 +14,4 @@
   <a href="signin">ログイン</a></p>
 </div>
 {% endif %}
+{% endblock %}
