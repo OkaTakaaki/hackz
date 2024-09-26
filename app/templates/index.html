@@ -1,0 +1,17 @@
+{% extends "app/base.html" %}
+{% block content %}
+{% if user.is_authenticated %}
+<div>
+  <h3>{{ user }}さんこんにちは！<h3>
+  <form action="signout" method="post">
+    {% csrf_token %}
+    <input type="submit" class="btn btn-outline-danger" value="ログアウト" />
+  </form>
+</div>
+{% else %}
+<div>
+  <a href="signup" class="btn btn-outline-danger">新規登録</a></p>
+  <a href="signin" class="btn btn-outline-danger">ログイン</a></p>
+</div>
+{% endif %}
+{% endblock %}

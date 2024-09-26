@@ -1,0 +1,25 @@
+
+<!-- templates/admin_login.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>管理者ログイン</title>
+</head>
+<body>
+    <h2>管理者ログイン</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">ログイン</button>
+    </form>
+    
+    <!-- メッセージ表示 -->
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

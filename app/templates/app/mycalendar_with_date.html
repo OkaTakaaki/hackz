@@ -1,0 +1,115 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center">
+        <h1>目標入力</h1>
+        <h2>{{ year }}年 {{ month }}月 {{ day }}日</h2>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            {% if goal %}
+                <div class="card">
+                    <div class="card-body">
+                        <!-- 目標とモチベーション -->
+                        <div class="form-group mb-3">
+                            <label class="form-label">登録されている目標：{{ goal.objective }}</label>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">モチベーション（6段階中）：{{ goal.motivation }}</label>
+                        </div>
+
+                        <!-- 達成度と達成時の振り返り -->
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ goal_form.objective.as_hidden }}
+                            {{ goal_form.motivation.as_hidden }}
+
+                            <div class="form-group mb-3">
+                                <label for="achievement" class="form-label">{{ goal_form.achievement.label_tag }}</label>
+                                {% if goal.achievement is not None %}
+                                    <span>{{ goal.achievement }}</span>
+                                {% else %}
+                                    {{ goal_form.achievement }}
+                                    <span class="form-text text-muted">0から100の範囲で入力してください。</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="turned" class="form-label">{{ goal_form.turned.label_tag }}</label>
+                                {% if goal.turned is not None %}
+                                    <span>{{ goal.turned }}</span>
+                                {% else %}
+                                    {{ goal_form.turned }}
+                                {% endif %}
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-outline-danger">保存</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group mb-3">
+                                <label for="objective" class="form-label">{{ goal_form.objective.label_tag }}</label>
+                                {{ goal_form.objective }}
+                            </div>
+
+                            <div class="form-group mb-3">
+                                {{ goal_form.motivation.as_hidden }}
+                            </div>
+
+                            <div class="form-group mt-3">
+                                <label for="motivation" class="form-label">今日の意気込み（モチベーションとして自動で判定）</label>
+                                <textarea name="text" class="form-control" rows="4" placeholder="テキストを入力してください"></textarea>
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <label class="form-label">{{ goal_form.achievement.label_tag }}はまだ入力できません</label>
+                                {{ goal_form.achievement.as_hidden }}
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <label class="form-label">{{ goal_form.turned.label_tag }}はまだ入力できません</label>
+                                {{ goal_form.turned.as_hidden }}
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-outline-danger">保存</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- スライダーの値をリアルタイムで表示するためのJavaScript -->
+<script>
+    var motivationSlider = document.getElementById('id_motivation');
+    if (motivationSlider) {
+        var motivationValue = document.getElementById('motivation-value');
+        motivationValue.innerHTML = motivationSlider.value || 50;  // 初期値を50に設定する
+        motivationSlider.oninput = function() {
+            motivationValue.innerHTML = this.value;
+        }
+    }
+
+    var achievementSlider = document.getElementById('id_achievement');
+    if (achievementSlider) {
+        var achievementValue = document.getElementById('achievement-value');
+        achievementValue.innerHTML = achievementSlider.value || 50;  // 初期値を50に設定する
+        achievementSlider.oninput = function() {
+            achievementValue.innerHTML = this.value;
+        }
+    }
+</script>
+{% endblock %}

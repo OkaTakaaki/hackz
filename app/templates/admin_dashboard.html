@@ -1,0 +1,104 @@
+{% extends "app/base.html" %}
+ 
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>管理者ダッシュボード</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logout {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .logout a {
+            color: #fff;
+            background-color: #007bff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .logout a:hover {
+            background-color: #0056b3;
+        }
+        form {
+            margin-bottom: 30px;
+        }
+        .aphorism-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .aphorism-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 200px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        small {
+            margin-bottom: 5px;
+        }
+        .actions a {
+            margin-right: 10px;
+            color: #fff;
+            background-color: #28a745;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .actions a:hover {
+            background-color: #218838;
+        }
+        .actions .delete {
+            background-color: #dc3545;
+        }
+        .actions .delete:hover {
+            background-color: #c82333;
+        }
+        </style>
+</head>
+<body>
+    
+    <h1>管理者ダッシュボード</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }} 
+        <button type="submit">名言を追加</button>
+    </form>
+    
+    <h2>追加された名言</h2>
+    <div class="aphorism-list">
+        {% for aphorism in aphorisms %}
+        <div class="aphorism-item">
+            <img src="{{ aphorism.picture.url }}" alt="{{ aphorism.word }}">
+            <small>名言: {{ aphorism.word }}</small>
+            <small>作者: {{ aphorism.author }}</small>
+            <small>レア度: {{ aphorism.get_rarity_display }}</small>
+            <small>追加日時: {{ aphorism.created_date|date:"Y/n/j-G:i" }}</small>
+            <div class="actions">
+                <a href="{% url 'app:edit_aphorism' aphorism.pk %}">編集</a>
+                <a href="{% url 'app:delete_aphorism' aphorism.pk %}" class="delete">削除</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+</body>
+</html>
+
+{% endblock %}
