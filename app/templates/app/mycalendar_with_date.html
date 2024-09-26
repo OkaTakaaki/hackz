@@ -12,36 +12,38 @@
             {% if goal %}
                 <div class="card">
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label class="form-label">登録されている目標</label>
-                                    <p class="form-control-plaintext">{{ goal.objective }}</p>
-                                </div>
-                            </div>
+                        <!-- 目標とモチベーション -->
+                        <div class="form-group mb-3">
+                            <label class="form-label">登録されている目標：{{ goal.objective }}</label>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label class="form-label">モチベーション</label>
-                                    <p class="form-control-plaintext">6段階中：{{ goal.motivation }}</p>
-                                </div>
-                            </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">モチベーション（6段階中）：{{ goal.motivation }}</label>
                         </div>
+
+                        <!-- 達成度と達成時の振り返り -->
                         <form method="post">
                             {% csrf_token %}
                             {{ goal_form.objective.as_hidden }}
                             {{ goal_form.motivation.as_hidden }}
 
-                            <div class="form-group mt-4">
+                            <div class="form-group mb-3">
                                 <label for="achievement" class="form-label">{{ goal_form.achievement.label_tag }}</label>
-                                {{ goal_form.achievement }}
-                                <small class="form-text text-muted">0から100の範囲で入力してください。</small>
+                                {% if goal.achievement is not None %}
+                                    <span>{{ goal.achievement }}</span>
+                                {% else %}
+                                    {{ goal_form.achievement }}
+                                    <span class="form-text text-muted">0から100の範囲で入力してください。</span>
+                                {% endif %}
                             </div>
 
-                            <div class="form-group mt-3">
+                            <div class="form-group mb-3">
                                 <label for="turned" class="form-label">{{ goal_form.turned.label_tag }}</label>
-                                {{ goal_form.turned }}
+                                {% if goal.turned is not None %}
+                                    <span>{{ goal.turned }}</span>
+                                {% else %}
+                                    {{ goal_form.turned }}
+                                {% endif %}
                             </div>
 
                             <div class="text-center mt-4">
@@ -55,12 +57,12 @@
                     <div class="card-body">
                         <form method="post">
                             {% csrf_token %}
-                            <div class="form-group">
+                            <div class="form-group mb-3">
                                 <label for="objective" class="form-label">{{ goal_form.objective.label_tag }}</label>
                                 {{ goal_form.objective }}
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mb-3">
                                 {{ goal_form.motivation.as_hidden }}
                             </div>
 
@@ -89,6 +91,7 @@
         </div>
     </div>
 </div>
+
 <!-- スライダーの値をリアルタイムで表示するためのJavaScript -->
 <script>
     var motivationSlider = document.getElementById('id_motivation');
