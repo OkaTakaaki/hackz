@@ -1,9 +1,10 @@
-<!DOCTYPE html>
-<html lang="ja">
+{% extends "app/base.html" %}
+ 
+{% block content %}
 <head>
     <meta charset="UTF-8">
     <title>管理者ダッシュボード</title>
-
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,38 +69,36 @@
         .actions .delete:hover {
             background-color: #c82333;
         }
-    </style>
+        </style>
 </head>
 <body>
-
+    
     <h1>管理者ダッシュボード</h1>
-
-    <div class="logout">
-        <a href="{% url 'app:admin_logout' %}">ログアウト</a>
-    </div>
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }} 
         <button type="submit">名言を追加</button>
     </form>
-
+    
     <h2>追加された名言</h2>
     <div class="aphorism-list">
         {% for aphorism in aphorisms %}
-            <div class="aphorism-item">
-                <img src="{{ aphorism.picture.url }}" alt="{{ aphorism.word }}">
-                <small>名言: {{ aphorism.word }}</small>
-                <small>作者: {{ aphorism.author }}</small>
-                <small>レア度: {{ aphorism.get_rarity_display }}</small>
-                <small>追加日時: {{ aphorism.created_date|date:"Y/n/j-G:i" }}</small>
-                <div class="actions">
-                    <a href="{% url 'app:edit_aphorism' aphorism.pk %}">編集</a>
-                    <a href="{% url 'app:delete_aphorism' aphorism.pk %}" class="delete">削除</a>
-                </div>
+        <div class="aphorism-item">
+            <img src="{{ aphorism.picture.url }}" alt="{{ aphorism.word }}">
+            <small>名言: {{ aphorism.word }}</small>
+            <small>作者: {{ aphorism.author }}</small>
+            <small>レア度: {{ aphorism.get_rarity_display }}</small>
+            <small>追加日時: {{ aphorism.created_date|date:"Y/n/j-G:i" }}</small>
+            <div class="actions">
+                <a href="{% url 'app:edit_aphorism' aphorism.pk %}">編集</a>
+                <a href="{% url 'app:delete_aphorism' aphorism.pk %}" class="delete">削除</a>
             </div>
+        </div>
         {% endfor %}
     </div>
-
+    
 </body>
 </html>
+
+{% endblock %}

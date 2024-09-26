@@ -6,8 +6,8 @@
     <h1 class="text-center">{{ year }}年{{ month }}月のカレンダー</h1>
     <div class="month-calendar">
         <div>
-            <a href="{% url 'app:mycalendar' year=previous_year month=previous_month %}">先月</a>
-            <a href="{% url 'app:mycalendar' year=next_year month=next_month %}">翌月</a>
+            <a href="{% url 'app:mycalendar' year=previous_year month=previous_month %}" style="color:red;">先月</a>
+            <a href="{% url 'app:mycalendar' year=next_year month=next_month %}" style="color:red;">翌月</a>
         </div>
         <table class="table table-bordered">
             <thead class="thead-light">
@@ -27,7 +27,7 @@
                         {% for day in week %}
                             <td class="text-center">
                                 {% if day != 0 %}
-                                    <h4><a href="{% url 'app:mycalendar_with_date' year=year month=month day=day %}">{{ day }}</a></h4>
+                                    <h4><a href="{% url 'app:mycalendar_with_date' year=year month=month day=day %}" style="color:red;">{{ day }}</a></h4>
                                 {% else %}
                                     &nbsp;  <!-- 空白セル -->
                                 {% endif %}

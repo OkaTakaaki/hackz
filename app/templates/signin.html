@@ -22,9 +22,9 @@
         <label for="password">パスワード:</label>
         <input type="password" name="password" id="password" required><br>
         
-        <button type="submit">サインイン</button>
+        <button type="submit" class="btn btn-outline-danger">サインイン</button>
     </form>
-    <p>新しいアカウントを作成しますか？ <a href="{% url 'app:signup' %}">新規登録はこちら</a></p>
+    <p>新しいアカウントを作成しますか？ <a href="{% url 'app:signup' %}" style="color:red;">新規登録はこちら</a></p>
 </body>
 </html>
 {% endblock %}
