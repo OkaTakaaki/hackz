@@ -262,15 +262,28 @@ class MyCalendarWithDate(View):
             form = GoalForm(request.POST, instance=goal)  # 既存の目標を更新
 
 
+            import random
+
+# レアリティに応じた重みを定義（☆5は最も希少、☆1は最も選ばれやすい）
+            RARITY_WEIGHTS = {
+                1: 5,  # ☆1が選ばれる確率を最も高く
+                2: 4,  # ☆2
+                3: 3,  # ☆3
+                4: 2,  # ☆4
+                5: 1   # ☆5が選ばれる確率を最も低く
+            }
+
             goal.flag = True
             user = request.user  # 現在のログインユーザーを取得
             kai = Goal.objects.filter(user=user, flag=True).count()
-           
-            if kai % 5 == 0:
+
+            if kai % 1 == 0:
                 aphorisms = list(Aphorism.objects.all())
 
                 if aphorisms:  # aphorismsが空でないことを確認
-                    selected_aphorism = random.choice(aphorisms)
+                    # レアリティごとに重みを設定してランダムに選ぶ
+                    aphorism_weights = [RARITY_WEIGHTS[aphorism.rarity] for aphorism in aphorisms]
+                    selected_aphorism = random.choices(aphorisms, weights=aphorism_weights, k=1)[0]
 
                     current_date = timezone.now()
 
@@ -283,7 +296,7 @@ class MyCalendarWithDate(View):
                         acquisition_date=current_date,  # スペルを修正
                         rarity=selected_aphorism.rarity,
                     )
-                    
+
                     # 直接create()メソッドを使用するため、save()は不要
 
                 else:
