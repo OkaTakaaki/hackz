@@ -8,47 +8,61 @@
     {% if goal %}
         <h3>登録されている目標: {{ goal.objective }}</h3>
         <h3>モチベーション: {{ goal.motivation }}</h3>
+        
         <form method="post">
             {% csrf_token %}
             <!-- hidden フィールドの設定 -->
             {{ goal_form.objective.as_hidden }}
             {{ goal_form.motivation.as_hidden }}
-            
+
             <div class="form-group">
-                <h3>{{ goal_form.achievement.label_tag }}
-                {{ goal_form.achievement }}</h3>
+                <h3>{{ goal_form.achievement.label_tag }}</h3>
+                {% if goal.achievement is not None %}
+                    <span>{{ goal.achievement }}</span>
+                {% else %}
+                    {{ goal_form.achievement }}
+                {% endif %}
                 <h4><span class="text-muted">0から100の範囲で入力してください。</span></h4>
             </div>
+
             <div class="form-group">
-                <h3>{{ goal_form.turned.label_tag }}
-                {{ goal_form.turned }}</h3>
+                <h3>{{ goal_form.turned.label_tag }}</h3>
+                {% if goal.turned is not None %}
+                    <span>{{ goal.turned }}</span>
+                {% else %}
+                    {{ goal_form.turned }}
+                {% endif %}
             </div>
+
             <button type="submit" class="btn btn-primary">保存</button>
         </form>
     {% else %}
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <h3>{{ goal_form.objective.label_tag }}
-                {{ goal_form.objective }}</h3>
+                <h3>{{ goal_form.objective.label_tag }}</h3>
+                {{ goal_form.objective }}
             </div>
+
             <div class="form-group">
                 {{ goal_form.motivation.as_hidden }}  <!-- モチベーションと目標の入力フォーム -->
             </div>
+
             <div class="form-group">
                 <h3>今日の意気込み（モチベーションとして自動で判定）</h3>
                 <textarea name="text" rows="4" cols="50" placeholder="テキストを入力してください"></textarea><br>
             </div>
-            
+
             <div class="form-group">
-                <h3>{{ goal_form.achievement.label_tag }}はまだ入力できません
-                {{ goal_form.achievement.as_hidden }}</h3>
+                <h3>{{ goal_form.achievement.label_tag }}はまだ入力できません</h3>
+                {{ goal_form.achievement.as_hidden }}
             </div>
+
             <div class="form-group">
-                <h3>{{ goal_form.turned.label_tag }}はまだ入力できません
-                {{ goal_form.turned.as_hidden }}</h3>
+                <h3>{{ goal_form.turned.label_tag }}はまだ入力できません</h3>
+                {{ goal_form.turned.as_hidden }}
             </div>
-            
+
             <button type="submit" class="btn btn-primary">保存</button>
         </form>
     {% endif %}
