@@ -73,6 +73,12 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    {% if user.is_superuser %}
+                    <li class="nav-item">
+                        <!-- 無理やりですみません -->
+                        <a class="nav-link" href="../../../admin-dashboard/">管理者ダッシュボード</a>
+                    </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link active" href="{% url 'app:mycalendar' year='2024' month='9' %}">ホーム</a>
                     </li>
